@@ -1,4 +1,5 @@
 import { Moon, Sun } from "lucide-react";
+import { NavLink } from "react-router";
 import { Button } from "./components/ui/button";
 import { useTheme } from "./contexts/ThemeContext";
 
@@ -20,9 +21,9 @@ export default function App() {
 					</div>
 				</div>
 				<div className="flex flex-col px-4 py-4 gap-4 w-fit">
-					<Button variant={"default"} size="lg">
-						azy
-					</Button>
+					<NavLink to="/yo">
+						<Button>Yo</Button>
+					</NavLink>
 				</div>
 			</div>
 		</main>
