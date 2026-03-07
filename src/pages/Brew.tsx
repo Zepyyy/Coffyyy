@@ -1,6 +1,6 @@
+import { type ChangeEvent, type FormEvent, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { db } from "@/db/db";
-import { type ChangeEvent, type FormEvent, useState } from "react";
 
 type BrewForm = {
 	name: string;
@@ -24,7 +24,14 @@ const INITIAL_FORM: BrewForm = {
 	tastingNotes: "",
 };
 
-const QUICK_FLAVORS = ["Citrus", "Chocolate", "Floral", "Nutty", "Berry", "Caramel"];
+const QUICK_FLAVORS = [
+	"Citrus",
+	"Chocolate",
+	"Floral",
+	"Nutty",
+	"Berry",
+	"Caramel",
+];
 
 function parseList(value: string) {
 	return value
@@ -99,7 +106,10 @@ export default function Brew() {
 				))}
 			</div>
 
-			<form className="grid grid-cols-1 md:grid-cols-2 gap-3" onSubmit={saveBrew}>
+			<form
+				className="grid grid-cols-1 md:grid-cols-2 gap-3"
+				onSubmit={saveBrew}
+			>
 				<input
 					className="h-11 rounded-md border border-border bg-background px-3 text-sm"
 					placeholder="Bean"

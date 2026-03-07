@@ -1,5 +1,7 @@
 import { useLiveQuery } from "dexie-react-hooks";
+import { ArrowRight } from "lucide-react";
 import { Link } from "react-router";
+import Tag from "@/components/tag";
 import { db } from "@/db/db";
 import type { Beans } from "@/types/default";
 
@@ -82,10 +84,10 @@ export default function Home() {
 			<div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
 				<Link
 					to="/brew"
-					aria-label="Open brew log"
+					aria-label="Add new brew"
 					className="lg:col-span-2 group relative overflow-hidden min-h-[clamp(10rem,24vh,16rem)] rounded-2xl border border-primary/20 bg-primary text-primary-foreground px-6 py-5 flex items-end transition-transform hover:scale-[1.01] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
 				>
-					<div className="absolute inset-0 bg-linear-to-tr from-primary/25 to-transparent group-hover:from-primary/35 transition-colors" />
+					<div className="absolute inset-0 bg-linear-to-tr from-primary/20 to-transparent group-hover:from-primary/50 transition-colors" />
 					<div className="relative z-10 flex items-end h-full">
 						<p className="text-3xl md:text-5xl font-semibold tracking-tight">
 							Add new
@@ -103,6 +105,32 @@ export default function Home() {
 						<p className="text-2xl md:text-4xl font-semibold tracking-tight">
 							Statistics
 						</p>
+					</div>
+				</Link>
+			</div>
+
+			<div>
+				<Link
+					to="/tests"
+					aria-label="Open brew"
+					className="group relative overflow-hidden min-h-[clamp(10rem,24vh,16rem)] rounded-2xl border border-border bg-background px-6 py-5 flex items-end transition-transform hover:scale-[1.01] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+				>
+					<div className="absolute inset-0 bg-linear-to-tr from-primary/30 to-transparent group-hover:from-primary/40 transition-colors" />
+					<p className="absolute top-1/2 right-5 -translate-y-1/2 text-2xl md:text-4xl font-semibold tracking-tight">
+						<ArrowRight
+							size={48}
+							className="group-hover:scale-[1.2] transition-transform ease-out duration-200"
+						/>
+					</p>
+					<div className="relative z-10 flex items-center h-full gap-4">
+						<p className="text-2xl md:text-4xl font-semibold tracking-tight">
+							Tests
+						</p>
+						<div className="flex items-center h-full z-20 gap-2">
+							<Tag text="aled" variant={"blueColored"} />
+							<Tag text="aled" variant={"light"} />
+							<Tag text="aled" variant={"default"} />
+						</div>
 					</div>
 				</Link>
 			</div>
