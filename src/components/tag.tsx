@@ -2,22 +2,21 @@ import { cva, type VariantProps } from "class-variance-authority";
 import clsx from "clsx";
 
 const colorVariant = cva(
-	"cursor-pointer flex items-center text-xs md:text-sm font-semibold tracking-tight px-2 py-1 rounded-sm",
+	"cursor-pointer flex items-center text-xs md:text-sm font-semibold tracking-tight px-2 py-1 rounded-lg text-foreground-tag border",
 	{
 		variants: {
 			variant: {
 				greenColored:
-					"bg-new-green-900 border-new-green-100 border shadow-xs hover:bg-new-green-900/50 hover:text-accent-foreground text-white",
+					"bg-tag-green-900 border-tag-green-100 shadow-xs hover:bg-tag-green-900/50 ",
 				yellowColored:
-					"bg-new-yellow-900 border-new-yellow-100 border shadow-xs hover:bg-new-yellow-900/50 hover:text-accent-foreground text-white",
+					"bg-tag-yellow-900 border-tag-yellow-100 shadow-xs hover:bg-tag-yellow-900/50 ",
 				blueColored:
-					"bg-new-blue-900 border-new-blue-100 border shadow-xs hover:bg-new-blue-900/50 hover:text-accent-foreground text-white",
+					"bg-tag-blue-900 border-tag-blue-100 shadow-xs hover:bg-tag-blue-900/50 ",
 				redColored:
-					"bg-new-red-900 border-new-red-100 border shadow-xs hover:bg-new-red-900/50 hover:text-accent-foreground text-white",
+					"bg-tag-red-900 border-tag-red-100 shadow-xs hover:bg-tag-red-900/50 ",
 				light:
-					"border-1 border-primary border-dashed bg-transparent text-accent-foreground hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50",
-				default:
-					"bg-background/80 border-background/80 text-accent-foreground hover:bg-background/50 hover:text-accent-foreground",
+					"border-1 border-primary border-dashed bg-transparent hover:bg-accent dark:bg-input/30 dark:border-input dark:hover:bg-input/50",
+				default: "bg-background/80 border-background/80 hover:bg-background/50",
 			},
 		},
 		defaultVariants: {

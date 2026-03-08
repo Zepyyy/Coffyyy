@@ -1,8 +1,8 @@
+import { useLiveQuery } from "dexie-react-hooks";
+import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { db } from "@/db/db";
 import type { Beans } from "@/types/default";
-import { useLiveQuery } from "dexie-react-hooks";
-import { useEffect, useMemo, useState } from "react";
 
 function MetricShape() {
 	return (
@@ -141,8 +141,10 @@ export default function Stats() {
 		.filter((value): value is number => typeof value === "number");
 	const avgRoast =
 		roastValues.length > 0
-			? (roastValues.reduce((sum, value) => sum + value, 0) / roastValues.length)
-					.toFixed(1)
+			? (
+					roastValues.reduce((sum, value) => sum + value, 0) /
+					roastValues.length
+				).toFixed(1)
 			: "No data";
 	const finishedBrews = sourceBrews.filter((brew) => brew.finished).length;
 	const topFlavor = getTopFlavor(sourceBrews.map((brew) => brew.flavors));
@@ -273,7 +275,9 @@ export default function Stats() {
 						<p className="relative z-10 text-xs uppercase tracking-wide text-muted-foreground">
 							{block.label}
 						</p>
-						<p className="relative z-10 text-xl font-semibold mt-1">{block.value}</p>
+						<p className="relative z-10 text-xl font-semibold mt-1">
+							{block.value}
+						</p>
 					</div>
 				))}
 			</div>
@@ -325,7 +329,12 @@ export default function Stats() {
 				</div>
 
 				<div className="flex justify-end">
-					<Button type="button" size="sm" variant="outline" onClick={resetControls}>
+					<Button
+						type="button"
+						size="sm"
+						variant="outline"
+						onClick={resetControls}
+					>
 						Reset filters
 					</Button>
 				</div>
@@ -386,7 +395,9 @@ export default function Stats() {
 												value={editForm.name}
 												onChange={(event) =>
 													setEditForm((current) =>
-														current ? { ...current, name: event.target.value } : current,
+														current
+															? { ...current, name: event.target.value }
+															: current,
 													)
 												}
 											/>
@@ -396,7 +407,9 @@ export default function Stats() {
 												value={editForm.brand}
 												onChange={(event) =>
 													setEditForm((current) =>
-														current ? { ...current, brand: event.target.value } : current,
+														current
+															? { ...current, brand: event.target.value }
+															: current,
 													)
 												}
 											/>
@@ -406,7 +419,9 @@ export default function Stats() {
 												value={editForm.origin}
 												onChange={(event) =>
 													setEditForm((current) =>
-														current ? { ...current, origin: event.target.value } : current,
+														current
+															? { ...current, origin: event.target.value }
+															: current,
 													)
 												}
 											/>
@@ -416,7 +431,9 @@ export default function Stats() {
 												value={editForm.variety}
 												onChange={(event) =>
 													setEditForm((current) =>
-														current ? { ...current, variety: event.target.value } : current,
+														current
+															? { ...current, variety: event.target.value }
+															: current,
 													)
 												}
 											/>
@@ -453,7 +470,9 @@ export default function Stats() {
 												value={editForm.flavors}
 												onChange={(event) =>
 													setEditForm((current) =>
-														current ? { ...current, flavors: event.target.value } : current,
+														current
+															? { ...current, flavors: event.target.value }
+															: current,
 													)
 												}
 											/>
