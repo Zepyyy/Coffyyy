@@ -249,29 +249,6 @@ export default function Brew() {
 		}));
 	}
 
-	function AutoCompleteBeanInfoFromName(value: string) {
-		const brew = brews?.find((b) => b.bean === value);
-		setForm((current) => ({
-			...current,
-			bean: brew ? `${brew.bean}` : value,
-			overallRating: brew ? `${brew.overallRating}` : form.overallRating,
-			grindSize: brew ? `${brew.grindSize}` : form.grindSize,
-			adjustementNeeded: brew
-				? `${brew.adjustementNeeded}`
-				: form.adjustementNeeded,
-			aftertaste: brew ? `${brew.aftertaste}` : form.aftertaste,
-			bitterness: brew ? `${brew.bitterness}` : form.bitterness,
-			mouthfeel: brew ? `${brew.mouthfeel}` : form.mouthfeel,
-			strength: brew ? `${brew.strength}` : form.strength,
-			type: brew ? `${brew.type}` : form.type,
-			tasteProfiles: brew ? `${brew.tasteProfiles}` : form.tasteProfiles,
-		}));
-	}
-
-	function clearField(field: MultiSuggestionField) {
-		setForm((current) => ({ ...current, [field]: "" }));
-	}
-
 	async function saveBrew(event: ChangeEvent<HTMLFormElement>) {
 		event.preventDefault();
 		if (step !== 3) return;
@@ -279,7 +256,7 @@ export default function Brew() {
 		setIsSaving(true);
 		setStatus("");
 		try {
-			const brew = await db.Brews.add({
+			await db.Brews.add({
 				bean: form.bean || undefined,
 				overallRating: form.overallRating || undefined,
 				grindSize: form.grindSize || undefined,

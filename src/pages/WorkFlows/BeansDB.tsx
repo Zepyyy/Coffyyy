@@ -165,8 +165,6 @@ export default function BeansDB() {
 	const selectedBrand =
 		findSuggestionMatch(form.brand, suggestions.brands) ?? "";
 
-	const selectedName = findSuggestionMatch(form.name, suggestions.names) ?? "";
-
 	const selectedOrigins = selectedFromListInput(
 		form.origin,
 		suggestions.origins,
@@ -224,21 +222,6 @@ export default function BeansDB() {
 				),
 				...values,
 			].join(", "),
-		}));
-	}
-
-	function AutoCompleteFromBeanName(value: string) {
-		const bean = beans?.find((b) => b.name === value);
-		setForm((current) => ({
-			...current,
-			name: bean ? `${bean.name}` : value,
-			brand: bean ? `${bean.brand}` : form.brand,
-			origin: bean ? `${bean.origin}` : form.origin,
-			variety: bean ? `${bean.variety}` : form.variety,
-			roastLevel: bean ? `${bean.roastLevel}` : form.roastLevel,
-			dominantNote: bean ? `${bean.dominantNote}` : form.dominantNote,
-			flavors: bean ? `${bean.flavors}` : form.flavors,
-			tastingNotes: bean ? `${bean.tastingNotes}` : form.tastingNotes,
 		}));
 	}
 

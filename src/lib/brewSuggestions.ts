@@ -1,4 +1,4 @@
-import type { Beans, Brews } from "@/types/default";
+import type { Brews } from "@/types/default";
 
 export type BrewSuggestions = {
 	bean: Array<string>;
