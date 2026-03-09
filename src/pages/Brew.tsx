@@ -1,5 +1,6 @@
 import { useLiveQuery } from "dexie-react-hooks";
-import { type ChangeEvent, useMemo, useState } from "react";
+import { Check, CircleSmall } from "lucide-react";
+import { type ChangeEvent, type MouseEvent, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { db } from "@/db/db";
@@ -246,7 +247,8 @@ export default function Brew() {
 		if (step > 0) setStep((current) => current - 1);
 	}
 
-	function goNext() {
+	function goNext(event: MouseEvent<HTMLButtonElement>) {
+		event.preventDefault();
 		if (step < STEPS.length - 1 && canGoNext) setStep((current) => current + 1);
 	}
 
@@ -255,6 +257,7 @@ export default function Brew() {
 			<div className="border-b border-border/70 p-5 md:p-6">
 				<div className="flex flex-col gap-3">
 					<h1 className="text-2xl font-semibold md:text-3xl">Brew Log</h1>
+					{progress} %
 					<div className="h-2 w-full overflow-hidden rounded-full bg-muted">
 						<div
 							className="h-full rounded-full bg-primary transition-all duration-300"
@@ -263,12 +266,23 @@ export default function Brew() {
 					</div>
 					<div className="grid grid-cols-2 gap-2 md:grid-cols-4">
 						{STEPS.map((item, index) => (
-							<StepPill
-								key={item.title}
-								index={index}
-								active={index === step}
-								title={item.title}
-							/>
+							<div key={item.title} className="relative">
+								<StepPill
+									key={item.title}
+									index={index}
+									active={index === step}
+									title={item.title}
+								/>
+								{index < step ? (
+									<span className="text-primary-foreground absolute right-2 top-1/2 -translate-y-1/2 bg-primary/80 rounded-full px-1 py-px">
+										<Check className="w-4 h-4" />
+									</span>
+								) : (
+									<span className="text-primary absolute right-2 top-1/2 -translate-y-1/2 bg-primary/15 rounded-full px-1 py-px">
+										<CircleSmall className="w-4 h-4" />
+									</span>
+								)}
+							</div>
 						))}
 					</div>
 				</div>
@@ -282,7 +296,6 @@ export default function Brew() {
 							{STEPS[step].description}
 						</p>
 					</div>
-
 					{step === 0 && (
 						<div className="space-y-2">
 							<FieldLabel title="Bean name" hint="Required" />
@@ -316,7 +329,6 @@ export default function Brew() {
 							)}
 						</div>
 					)}
-
 					{step === 1 && (
 						<div className="space-y-5">
 							<div className="space-y-2">
@@ -627,7 +639,7 @@ export default function Brew() {
 								disabled={!canGoNext || isSaving}
 								className="min-h-12 flex-2"
 							>
-								Next step
+								Next
 							</Button>
 						) : (
 							<Button
