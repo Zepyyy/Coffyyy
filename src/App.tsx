@@ -1,3 +1,4 @@
+import { Analytics } from "@vercel/analytics/react";
 import clsx from "clsx";
 import { Moon, Sun } from "lucide-react";
 import { NavLink, Outlet } from "react-router";
@@ -80,6 +81,7 @@ export default function App() {
 					<Outlet />
 				</div>
 			</div>
+			<Analytics />
 		</main>
 	);
 }
