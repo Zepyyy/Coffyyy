@@ -27,7 +27,7 @@ export default function App() {
 					</NavLink>
 					<Separator orientation="vertical" />
 					<NavLink
-						to="/brew"
+						to="/workflows/"
 						className={({ isActive }) =>
 							clsx(
 								"flex justify-center items-center w-full",
@@ -37,7 +37,20 @@ export default function App() {
 							)
 						}
 					>
-						Brew
+						Workflows
+					</NavLink>
+					<NavLink
+						to="/database"
+						className={({ isActive }) =>
+							clsx(
+								"flex justify-center items-center w-full",
+								isActive
+									? "text-primary-100 bg-primary-800 hover:bg-primary-800/90"
+									: "text-primary-800 bg-primary-200 hover:bg-primary-200/90",
+							)
+						}
+					>
+						Database
 					</NavLink>
 					<Separator orientation="vertical" />
 					<NavLink

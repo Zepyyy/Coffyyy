@@ -3,11 +3,13 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router";
 import App from "./App.tsx";
-import Brew from "./pages/Brew.tsx";
 import { CatchAll } from "./pages/CatchAll.tsx";
+import Database from "./pages/Database.tsx";
 import Home from "./pages/Home.tsx";
 import Stats from "./pages/Stats.tsx";
 import Tests from "./pages/Tests.tsx";
+import BeansDB from "./pages/WorkFlows/BeansDB.tsx";
+import Brew from "./pages/WorkFlows/Brew.tsx";
 import Providers from "./providers/Providers.tsx";
 
 createRoot(document.getElementById("root")!).render(
@@ -20,7 +22,16 @@ createRoot(document.getElementById("root")!).render(
 						<Route path="home" element={<Home />} />
 						<Route path="stats" element={<Stats />} />
 						<Route path="tests" element={<Tests />} />
-						<Route path="brew" element={<Brew />} />
+						<Route path="database" element={<Database />} />
+						<Route path="workflows">
+							<Route
+								index
+								path=""
+								element={<Navigate to="/workflows/Default" replace />}
+							/>
+							<Route path="brew" element={<Brew />} />
+							<Route path="beans" element={<BeansDB />} />
+						</Route>
 						<Route path="/*" element={<CatchAll />} />
 					</Route>
 				</Routes>

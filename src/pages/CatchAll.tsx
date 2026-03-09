@@ -11,8 +11,8 @@ const EXCUSES = [
 ];
 
 export function CatchAll() {
-	const [excuseIndex, setExcuseIndex] = useState(
-		() => Math.floor(Math.random() * EXCUSES.length),
+	const [excuseIndex, setExcuseIndex] = useState(() =>
+		Math.floor(Math.random() * EXCUSES.length),
 	);
 	const [wiggling, setWiggling] = useState(false);
 
@@ -56,6 +56,18 @@ export function CatchAll() {
 				className="mt-2 rounded-xl border border-primary/30 bg-primary/10 px-6 py-3 text-sm font-semibold text-foreground transition-all hover:bg-primary/20 hover:scale-[1.02] active:scale-95"
 			>
 				Back to the grind →
+			</Link>
+			<Link
+				to="/workflows/brew"
+				className="mt-2 rounded-xl border border-primary/30 bg-primary/10 px-6 py-3 text-sm font-semibold text-foreground transition-all hover:bg-primary/20 hover:scale-[1.02] active:scale-95"
+			>
+				Add brews?
+			</Link>
+			<Link
+				to="/workflows/beans"
+				className="mt-2 rounded-xl border border-primary/30 bg-primary/10 px-6 py-3 text-sm font-semibold text-foreground transition-all hover:bg-primary/20 hover:scale-[1.02] active:scale-95"
+			>
+				Add beans?
 			</Link>
 		</div>
 	);

@@ -2,7 +2,7 @@ import { useLiveQuery } from "dexie-react-hooks";
 import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { db } from "@/db/db";
-import type { Beans } from "@/types/default";
+import type { Brews } from "@/types/default";
 
 function MetricShape() {
 	return (
@@ -50,18 +50,14 @@ function MetricShape() {
 	);
 }
 
-function getTopFlavor(
-	flavors: Array<Array<string> | undefined> | undefined,
-): string {
-	if (!flavors?.length) return "No data";
+function getTopValue(values: Array<string | undefined>): string {
+	if (values.length === 0) return "No data";
 	const counts = new Map<string, number>();
 
-	for (const list of flavors) {
-		for (const flavor of list ?? []) {
-			const key = flavor.trim();
-			if (!key) continue;
-			counts.set(key, (counts.get(key) ?? 0) + 1);
-		}
+	for (const value of values) {
+		const key = value?.trim();
+		if (!key) continue;
+		counts.set(key, (counts.get(key) ?? 0) + 1);
 	}
 
 	const [winner] = [...counts.entries()].sort((a, b) => b[1] - a[1])[0] ?? [];
@@ -69,18 +65,22 @@ function getTopFlavor(
 }
 
 type EditForm = {
-	name: string;
-	brand: string;
-	origin: string;
-	variety: string;
-	roastLevel: string;
-	dominantNote: string;
-	flavors: string;
-	tastingNotes: string;
+	bean: string;
+	overallRating: string;
+	grindSize: string;
+	date: string;
+	acidity: string;
+	adjustementNeeded: string;
+	aftertaste: string;
+	bitterness: string;
+	mouthfeel: string;
+	strength: string;
+	type: string;
+	tasteProfiles: string;
 };
 
-type SortMode = "newest" | "oldest" | "name-asc" | "name-desc" | "roast-desc";
-type FinishedFilter = "all" | "finished" | "unfinished";
+type SortMode = "newest" | "oldest" | "bean-asc" | "bean-desc" | "rating-asc";
+type RatingFilter = "all" | string;
 
 const PAGE_SIZE = 8;
 
@@ -95,28 +95,37 @@ function parseList(value: string) {
 		.filter(Boolean);
 }
 
-function toEditForm(brew: Beans): EditForm {
+function toEditForm(brew: Brews): EditForm {
 	return {
-		name: brew.name ?? "",
-		brand: brew.brand ?? "",
-		origin: joinList(brew.origin),
-		variety: joinList(brew.variety),
-		roastLevel: brew.roastLevel?.toString() ?? "",
-		dominantNote: brew.dominantNote ?? "",
-		flavors: joinList(brew.flavors),
-		tastingNotes: joinList(brew.tastingNotes),
+		bean: brew.bean ?? "",
+		overallRating: brew.overallRating ?? "",
+		grindSize: brew.grindSize ?? "",
+		date: brew.date ?? "",
+		acidity: brew.acidity ?? "",
+		adjustementNeeded: brew.adjustementNeeded ?? "",
+		aftertaste: brew.aftertaste ?? "",
+		bitterness: brew.bitterness ?? "",
+		mouthfeel: brew.mouthfeel ?? "",
+		strength: brew.strength ?? "",
+		type: brew.type ?? "",
+		tasteProfiles: joinList(brew.tasteProfiles),
 	};
 }
 
-function searchHaystack(brew: Beans) {
+function searchHaystack(brew: Brews) {
 	return [
-		brew.name,
-		brew.brand,
-		brew.dominantNote,
-		joinList(brew.flavors),
-		joinList(brew.tastingNotes),
-		joinList(brew.origin),
-		joinList(brew.variety),
+		brew.bean,
+		brew.overallRating,
+		brew.grindSize,
+		brew.date,
+		brew.acidity,
+		brew.adjustementNeeded,
+		brew.aftertaste,
+		brew.bitterness,
+		brew.mouthfeel,
+		brew.strength,
+		brew.type,
+		joinList(brew.tasteProfiles),
 	]
 		.filter(Boolean)
 		.join(" ")
@@ -124,58 +133,70 @@ function searchHaystack(brew: Beans) {
 }
 
 export default function Stats() {
-	const brews = useLiveQuery(async () => db.Beans.toArray(), []);
+	const brews = useLiveQuery(async () => db.Brews.toArray(), []);
 	const [editId, setEditId] = useState<number | null>(null);
 	const [editForm, setEditForm] = useState<EditForm | null>(null);
 	const [status, setStatus] = useState("");
 	const [isSaving, setIsSaving] = useState(false);
 	const [isDeletingId, setIsDeletingId] = useState<number | null>(null);
 	const [search, setSearch] = useState("");
-	const [finishedFilter, setFinishedFilter] = useState<FinishedFilter>("all");
+	const [ratingFilter, setRatingFilter] = useState<RatingFilter>("all");
 	const [sortMode, setSortMode] = useState<SortMode>("newest");
 	const [page, setPage] = useState(1);
 
 	const sourceBrews = brews ?? [];
 	const totalBrews = sourceBrews.length;
-	const roastValues = sourceBrews
-		.map((brew) => brew.roastLevel)
-		.filter((value): value is number => typeof value === "number");
-	const avgRoast =
-		roastValues.length > 0
-			? (
-					roastValues.reduce((sum, value) => sum + value, 0) /
-					roastValues.length
-				).toFixed(1)
-			: "No data";
-	const finishedBrews = sourceBrews.filter((brew) => brew.finished).length;
-	const topFlavor = getTopFlavor(sourceBrews.map((brew) => brew.flavors));
+	const uniqueBeans = new Set(
+		sourceBrews
+			.map((brew) => brew.bean?.trim().toLowerCase())
+			.filter((value): value is string => Boolean(value)),
+	).size;
+	const topRating = getTopValue(sourceBrews.map((brew) => brew.overallRating));
+	const topTasteProfile = getTopValue(
+		sourceBrews.flatMap((brew) => brew.tasteProfiles ?? []),
+	);
+	const ratingOptions = [
+		...new Set(sourceBrews.map((brew) => brew.overallRating)),
+	]
+		.filter((value): value is string => Boolean(value?.trim()))
+		.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
 
 	const filteredBrews = useMemo(() => {
 		const query = search.trim().toLowerCase();
 
 		return sourceBrews.filter((brew) => {
-			if (finishedFilter === "finished" && !brew.finished) return false;
-			if (finishedFilter === "unfinished" && brew.finished) return false;
+			if (
+				ratingFilter !== "all" &&
+				(brew.overallRating ?? "").toLowerCase() !== ratingFilter
+			) {
+				return false;
+			}
 			if (!query) return true;
 			return searchHaystack(brew).includes(query);
 		});
-	}, [sourceBrews, search, finishedFilter]);
+	}, [sourceBrews, search, ratingFilter]);
 
 	const sortedBrews = useMemo(() => {
 		const next = [...filteredBrews];
 
 		next.sort((a, b) => {
 			if (sortMode === "oldest") return (a.id ?? 0) - (b.id ?? 0);
-			if (sortMode === "name-asc")
-				return (a.name ?? "").localeCompare(b.name ?? "", undefined, {
+			if (sortMode === "bean-asc")
+				return (a.bean ?? "").localeCompare(b.bean ?? "", undefined, {
 					sensitivity: "base",
 				});
-			if (sortMode === "name-desc")
-				return (b.name ?? "").localeCompare(a.name ?? "", undefined, {
+			if (sortMode === "bean-desc")
+				return (b.bean ?? "").localeCompare(a.bean ?? "", undefined, {
 					sensitivity: "base",
 				});
-			if (sortMode === "roast-desc")
-				return (b.roastLevel ?? -1) - (a.roastLevel ?? -1);
+			if (sortMode === "rating-asc")
+				return (a.overallRating ?? "").localeCompare(
+					b.overallRating ?? "",
+					undefined,
+					{
+						sensitivity: "base",
+					},
+				);
 			return (b.id ?? 0) - (a.id ?? 0);
 		});
 
@@ -191,7 +212,7 @@ export default function Stats() {
 	const pageStart = (page - 1) * PAGE_SIZE;
 	const paginatedBrews = sortedBrews.slice(pageStart, pageStart + PAGE_SIZE);
 
-	function beginEdit(brew: Beans) {
+	function beginEdit(brew: Brews) {
 		if (typeof brew.id !== "number") return;
 		setEditId(brew.id);
 		setEditForm(toEditForm(brew));
@@ -209,16 +230,19 @@ export default function Stats() {
 		setIsSaving(true);
 		setStatus("");
 		try {
-			const roast = Number(editForm.roastLevel);
-			await db.Beans.update(editId, {
-				name: editForm.name || undefined,
-				brand: editForm.brand || undefined,
-				origin: parseList(editForm.origin),
-				variety: parseList(editForm.variety),
-				roastLevel: Number.isFinite(roast) ? roast : undefined,
-				dominantNote: editForm.dominantNote || undefined,
-				flavors: parseList(editForm.flavors),
-				tastingNotes: parseList(editForm.tastingNotes),
+			await db.Brews.update(editId, {
+				bean: editForm.bean || undefined,
+				overallRating: editForm.overallRating || undefined,
+				grindSize: editForm.grindSize || undefined,
+				date: editForm.date || undefined,
+				acidity: editForm.acidity || undefined,
+				adjustementNeeded: editForm.adjustementNeeded || undefined,
+				aftertaste: editForm.aftertaste || undefined,
+				bitterness: editForm.bitterness || undefined,
+				mouthfeel: editForm.mouthfeel || undefined,
+				strength: editForm.strength || undefined,
+				type: editForm.type || undefined,
+				tasteProfiles: parseList(editForm.tasteProfiles),
 			});
 			setStatus("Brew updated.");
 			cancelEdit();
@@ -235,7 +259,7 @@ export default function Stats() {
 		if (!confirmed) return;
 		setIsDeletingId(id);
 		try {
-			await db.Beans.delete(id);
+			await db.Brews.delete(id);
 			if (editId === id) cancelEdit();
 			setStatus("Brew deleted.");
 		} catch {
@@ -247,7 +271,7 @@ export default function Stats() {
 
 	function resetControls() {
 		setSearch("");
-		setFinishedFilter("all");
+		setRatingFilter("all");
 		setSortMode("newest");
 		setPage(1);
 	}
@@ -260,12 +284,9 @@ export default function Stats() {
 			<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
 				{[
 					{ label: "Total brews", value: String(totalBrews) },
-					{ label: "Finished brews", value: String(finishedBrews) },
-					{
-						label: "Avg roast",
-						value: avgRoast === "No data" ? avgRoast : `${avgRoast} / 10`,
-					},
-					{ label: "Top flavor", value: topFlavor },
+					{ label: "Unique beans", value: String(uniqueBeans) },
+					{ label: "Top rating", value: topRating },
+					{ label: "Top taste profile", value: topTasteProfile },
 				].map((block) => (
 					<div
 						key={block.label}
@@ -293,7 +314,7 @@ export default function Stats() {
 				<div className="grid grid-cols-1 md:grid-cols-4 gap-2">
 					<input
 						className="md:col-span-2 h-10 rounded-md border border-border bg-card px-3 text-sm"
-						placeholder="Search bean, brand, flavors, notes..."
+						placeholder="Search bean, rating, profile, method..."
 						value={search}
 						onChange={(event) => {
 							setSearch(event.target.value);
@@ -302,15 +323,18 @@ export default function Stats() {
 					/>
 					<select
 						className="h-10 rounded-md border border-border bg-card px-3 text-sm"
-						value={finishedFilter}
+						value={ratingFilter}
 						onChange={(event) => {
-							setFinishedFilter(event.target.value as FinishedFilter);
+							setRatingFilter(event.target.value as RatingFilter);
 							setPage(1);
 						}}
 					>
-						<option value="all">All statuses</option>
-						<option value="finished">Finished only</option>
-						<option value="unfinished">Unfinished only</option>
+						<option value="all">All ratings</option>
+						{ratingOptions.map((rating) => (
+							<option key={rating} value={rating.toLowerCase()}>
+								{rating}
+							</option>
+						))}
 					</select>
 					<select
 						className="h-10 rounded-md border border-border bg-card px-3 text-sm"
@@ -322,9 +346,9 @@ export default function Stats() {
 					>
 						<option value="newest">Sort: newest</option>
 						<option value="oldest">Sort: oldest</option>
-						<option value="name-asc">Sort: name A-Z</option>
-						<option value="name-desc">Sort: name Z-A</option>
-						<option value="roast-desc">Sort: roast high-low</option>
+						<option value="bean-asc">Sort: bean A-Z</option>
+						<option value="bean-desc">Sort: bean Z-A</option>
+						<option value="rating-asc">Sort: rating A-Z</option>
 					</select>
 				</div>
 
@@ -359,13 +383,13 @@ export default function Stats() {
 									<div className="flex flex-wrap items-center justify-between gap-2">
 										<div className="flex flex-wrap items-center gap-3">
 											<span className="font-medium">
-												{brew.name ?? "Unnamed bean"}
+												{brew.bean ?? "Unnamed brew"}
 											</span>
 											<span className="text-muted-foreground">
-												{brew.brand ?? "Unknown roaster"}
+												{brew.overallRating ?? "No rating"}
 											</span>
 											<span className="text-muted-foreground">
-												{brew.dominantNote ?? "No dominant note"}
+												{brew.type ?? "No method"}
 											</span>
 										</div>
 										{typeof id === "number" && (
@@ -394,98 +418,152 @@ export default function Stats() {
 											<input
 												className="h-10 rounded-md border border-border bg-card px-3"
 												placeholder="Bean name"
-												value={editForm.name}
+												value={editForm.bean}
 												onChange={(event) =>
 													setEditForm((current) =>
 														current
-															? { ...current, name: event.target.value }
+															? { ...current, bean: event.target.value }
 															: current,
 													)
 												}
 											/>
 											<input
 												className="h-10 rounded-md border border-border bg-card px-3"
-												placeholder="Brand / roaster"
-												value={editForm.brand}
+												placeholder="Overall rating"
+												value={editForm.overallRating}
 												onChange={(event) =>
 													setEditForm((current) =>
 														current
-															? { ...current, brand: event.target.value }
+															? {
+																	...current,
+																	overallRating: event.target.value,
+																}
 															: current,
 													)
 												}
 											/>
 											<input
 												className="h-10 rounded-md border border-border bg-card px-3"
-												placeholder="Origin (comma separated)"
-												value={editForm.origin}
+												placeholder="Grind size"
+												value={editForm.grindSize}
 												onChange={(event) =>
 													setEditForm((current) =>
 														current
-															? { ...current, origin: event.target.value }
+															? { ...current, grindSize: event.target.value }
+															: current,
+													)
+												}
+											/>
+											<input
+												type="date"
+												className="h-10 rounded-md border border-border bg-card px-3"
+												value={editForm.date}
+												onChange={(event) =>
+													setEditForm((current) =>
+														current
+															? { ...current, date: event.target.value }
 															: current,
 													)
 												}
 											/>
 											<input
 												className="h-10 rounded-md border border-border bg-card px-3"
-												placeholder="Variety (comma separated)"
-												value={editForm.variety}
+												placeholder="Acidity"
+												value={editForm.acidity}
 												onChange={(event) =>
 													setEditForm((current) =>
 														current
-															? { ...current, variety: event.target.value }
-															: current,
-													)
-												}
-											/>
-											<input
-												type="number"
-												min={1}
-												max={10}
-												className="h-10 rounded-md border border-border bg-card px-3"
-												placeholder="Roast level 1-10"
-												value={editForm.roastLevel}
-												onChange={(event) =>
-													setEditForm((current) =>
-														current
-															? { ...current, roastLevel: event.target.value }
+															? { ...current, acidity: event.target.value }
 															: current,
 													)
 												}
 											/>
 											<input
 												className="h-10 rounded-md border border-border bg-card px-3"
-												placeholder="Dominant note"
-												value={editForm.dominantNote}
+												placeholder="Adjustement needed"
+												value={editForm.adjustementNeeded}
 												onChange={(event) =>
 													setEditForm((current) =>
 														current
-															? { ...current, dominantNote: event.target.value }
+															? {
+																	...current,
+																	adjustementNeeded: event.target.value,
+																}
 															: current,
 													)
 												}
 											/>
 											<input
 												className="h-10 rounded-md border border-border bg-card px-3"
-												placeholder="Flavors (comma separated)"
-												value={editForm.flavors}
+												placeholder="Aftertaste"
+												value={editForm.aftertaste}
 												onChange={(event) =>
 													setEditForm((current) =>
 														current
-															? { ...current, flavors: event.target.value }
+															? { ...current, aftertaste: event.target.value }
 															: current,
 													)
 												}
 											/>
 											<input
 												className="h-10 rounded-md border border-border bg-card px-3"
-												placeholder="Tasting notes (comma separated)"
-												value={editForm.tastingNotes}
+												placeholder="Bitterness"
+												value={editForm.bitterness}
 												onChange={(event) =>
 													setEditForm((current) =>
 														current
-															? { ...current, tastingNotes: event.target.value }
+															? { ...current, bitterness: event.target.value }
+															: current,
+													)
+												}
+											/>
+											<input
+												className="h-10 rounded-md border border-border bg-card px-3"
+												placeholder="Mouthfeel"
+												value={editForm.mouthfeel}
+												onChange={(event) =>
+													setEditForm((current) =>
+														current
+															? { ...current, mouthfeel: event.target.value }
+															: current,
+													)
+												}
+											/>
+											<input
+												className="h-10 rounded-md border border-border bg-card px-3"
+												placeholder="Strength"
+												value={editForm.strength}
+												onChange={(event) =>
+													setEditForm((current) =>
+														current
+															? { ...current, strength: event.target.value }
+															: current,
+													)
+												}
+											/>
+											<input
+												className="h-10 rounded-md border border-border bg-card px-3"
+												placeholder="Brew method"
+												value={editForm.type}
+												onChange={(event) =>
+													setEditForm((current) =>
+														current
+															? { ...current, type: event.target.value }
+															: current,
+													)
+												}
+											/>
+											<input
+												className="h-10 rounded-md border border-border bg-card px-3"
+												placeholder="Taste profiles (comma separated)"
+												value={editForm.tasteProfiles}
+												onChange={(event) =>
+													setEditForm((current) =>
+														current
+															? {
+																	...current,
+																	tasteProfiles: event.target.value,
+																}
 															: current,
 													)
 												}

@@ -18,6 +18,22 @@ export type Beans = {
 	variety?: Array<string>;
 };
 
+export type Brews = {
+	id?: number;
+	bean?: string;
+	overallRating?: string;
+	grindSize?: string;
+	date?: string;
+	acidity?: string;
+	adjustementNeeded?: string;
+	aftertaste?: string;
+	bitterness?: string;
+	mouthfeel?: string;
+	strength?: string;
+	type?: string;
+	tasteProfiles?: Array<string>;
+};
+
 export type Machines = {
 	id?: number;
 	name?: string;
