@@ -3,6 +3,7 @@ import { Check, CircleSmall } from "lucide-react";
 import { type ChangeEvent, type MouseEvent, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { addBean } from "@/db/crud/add";
 import { db } from "@/db/db";
 import { buildBeanSuggestions } from "@/lib/beanSuggestions";
 
@@ -51,15 +52,15 @@ const INITIAL_FORM: BeanForm = {
 
 const STEPS = [
 	{
-		title: "Bean name",
-		description: "Give this bean a name so you can find it quickly later.",
-	},
-	{
 		title: "Origin & Roast",
-		description: "Pick roaster, origin, variety and roast profile.",
+		description: "Enter bean Name, Roast profile and origin.",
 	},
 	{
-		title: "Beans' Tasting Notes",
+		title: "Variety & Details",
+		description: "Pick variety and details",
+	},
+	{
+		title: "Beans' Flavor Profile",
 		description: "Inherent flavors and aromas of the coffee bean.",
 	},
 	{
@@ -164,6 +165,12 @@ export default function BeansDB() {
 
 	const selectedBrand =
 		findSuggestionMatch(form.brand, suggestions.brands) ?? "";
+	const selectedProcesses =
+		findSuggestionMatch(form.process, suggestions.processes) ?? "";
+	const selectedBotanics =
+		findSuggestionMatch(form.botanic, suggestions.botanics) ?? "";
+	const selectedDesignations =
+		findSuggestionMatch(form.designation, suggestions.designations) ?? "";
 
 	const selectedOrigins = selectedFromListInput(
 		form.origin,
@@ -237,16 +244,22 @@ export default function BeansDB() {
 		setStatus("");
 		try {
 			const roast = Number(form.roastLevel);
-			await db.Beans.add({
-				name: form.name || undefined,
-				brand: form.brand || undefined,
+
+			await addBean({
+				name: form.name,
+				brand: form.brand,
+				rating: form.rating,
+				status: form.status,
+				process: form.process,
+				botanic: form.botanic,
+				designation: form.designation,
 				origin: parseList(form.origin),
 				variety: parseList(form.variety),
-				roastLevel: Number.isFinite(roast) ? roast : undefined,
-				dominantNote: form.dominantNote || undefined,
+				roastLevel: Number.isFinite(roast) ? roast : -1,
+				dominantNote: form.dominantNote,
 				flavors: parseList(form.flavors),
 				tastingNotes: parseList(form.tastingNotes),
-				finished: true,
+				finished: false,
 			});
 			setForm(INITIAL_FORM);
 			setStep(0);
@@ -315,19 +328,17 @@ export default function BeansDB() {
 							</p>
 						</div>
 						{step === 0 && (
-							<div className="space-y-2">
-								<FieldLabel title="Bean name" hint="Required" />
-								<input
-									className="h-16 w-full rounded-lg border border-border/70 bg-background px-4 text-sm text-muted-foreground focus:text-foreground"
-									placeholder="Ex: El Paraiso - Red Berries"
-									value={form.name}
-									onChange={setField("name")}
-									required
-								/>
-							</div>
-						)}
-						{step === 1 && (
 							<div className="space-y-5">
+								<div className="space-y-2">
+									<FieldLabel title="Bean name" hint="Required" />
+									<input
+										className="h-16 w-full rounded-lg border border-border/70 bg-background px-4 text-sm text-muted-foreground focus:text-foreground"
+										placeholder="Ex: El Paraiso - Red Berries"
+										value={form.name}
+										onChange={setField("name")}
+										required
+									/>
+								</div>
 								<div className="space-y-2">
 									<FieldLabel title="Roaster" hint="Single select available" />
 									{suggestions.brands.length > 0 && (
@@ -362,9 +373,22 @@ export default function BeansDB() {
 									)}
 									<input
 										className="h-11 w-full rounded-lg border border-border/70 bg-background px-4 text-sm text-muted-foreground focus:text-foreground"
-										placeholder="Roaster"
+										placeholder="Brand"
 										value={form.brand}
 										onChange={setField("brand")}
+									/>
+								</div>
+
+								<div className="space-y-2">
+									<FieldLabel title="Roast level" hint="1 to 10" />
+									<input
+										type="number"
+										min={1}
+										max={10}
+										className="h-12 w-full rounded-lg border border-border bg-background px-4 text-sm"
+										placeholder="Roast level"
+										value={form.roastLevel}
+										onChange={setField("roastLevel")}
 									/>
 								</div>
 
@@ -416,7 +440,47 @@ export default function BeansDB() {
 										onChange={setField("origin")}
 									/>
 								</div>
-
+							</div>
+						)}
+						{step === 1 && (
+							<div className="space-y-5">
+								<div className="space-y-2">
+									{suggestions.processes.length > 0 && (
+										<div className="rounded-lg border border-border/70 bg-muted/40 p-4">
+											<ToggleGroup
+												type="single"
+												size="lg"
+												spacing={2}
+												className="w-full flex-wrap justify-center"
+												value={selectedProcesses}
+												onValueChange={(value) =>
+													setSingleFromToggle(
+														"process",
+														suggestions.processes,
+														value,
+													)
+												}
+											>
+												{suggestions.processes.map((process) => (
+													<ToggleGroupItem
+														key={process}
+														value={process}
+														color="yellowColored"
+														className="px-4"
+													>
+														{process}
+													</ToggleGroupItem>
+												))}
+											</ToggleGroup>
+										</div>
+									)}
+									<input
+										className="h-11 w-full rounded-lg border border-border/70 bg-background px-4 text-sm text-muted-foreground focus:text-foreground"
+										placeholder="Process (comma separated)"
+										value={form.process}
+										onChange={setField("process")}
+									/>
+								</div>
 								<div className="space-y-2">
 									<div className="flex items-center justify-between">
 										<FieldLabel title="Variety" hint="Multi select available" />
@@ -465,17 +529,78 @@ export default function BeansDB() {
 										onChange={setField("variety")}
 									/>
 								</div>
-
 								<div className="space-y-2">
-									<FieldLabel title="Roast level" hint="1 to 10" />
+									{suggestions.designations.length > 0 && (
+										<div className="rounded-lg border border-border/70 bg-muted/40 p-4">
+											<ToggleGroup
+												type="single"
+												size="lg"
+												spacing={2}
+												className="w-full flex-wrap justify-center"
+												value={selectedDesignations}
+												onValueChange={(value) =>
+													setSingleFromToggle(
+														"designation",
+														suggestions.designations,
+														value,
+													)
+												}
+											>
+												{suggestions.designations.map((designation) => (
+													<ToggleGroupItem
+														key={designation}
+														value={designation}
+														color="yellowColored"
+														className="px-4"
+													>
+														{designation}
+													</ToggleGroupItem>
+												))}
+											</ToggleGroup>
+										</div>
+									)}
 									<input
-										type="number"
-										min={1}
-										max={10}
-										className="h-12 w-full rounded-lg border border-border bg-background px-4 text-sm"
-										placeholder="Roast level"
-										value={form.roastLevel}
-										onChange={setField("roastLevel")}
+										className="h-11 w-full rounded-lg border border-border/70 bg-background px-4 text-sm text-muted-foreground focus:text-foreground"
+										placeholder="Designation"
+										value={form.designation}
+										onChange={setField("designation")}
+									/>
+								</div>
+								<div className="space-y-2">
+									{suggestions.botanics.length > 0 && (
+										<div className="rounded-lg border border-border/70 bg-muted/40 p-4">
+											<ToggleGroup
+												type="single"
+												size="lg"
+												spacing={2}
+												className="w-full flex-wrap justify-center"
+												value={selectedBotanics}
+												onValueChange={(value) =>
+													setSingleFromToggle(
+														"botanic",
+														suggestions.botanics,
+														value,
+													)
+												}
+											>
+												{suggestions.botanics.map((botanic) => (
+													<ToggleGroupItem
+														key={botanic}
+														value={botanic}
+														color="yellowColored"
+														className="px-4"
+													>
+														{botanic}
+													</ToggleGroupItem>
+												))}
+											</ToggleGroup>
+										</div>
+									)}
+									<input
+										className="h-11 w-full rounded-lg border border-border/70 bg-background px-4 text-sm text-muted-foreground focus:text-foreground"
+										placeholder="Botanic"
+										value={form.botanic}
+										onChange={setField("botanic")}
 									/>
 								</div>
 							</div>
@@ -631,10 +756,13 @@ export default function BeansDB() {
 						{step === 3 && (
 							<div className="space-y-4">
 								<div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-									<SummaryRow label="Bean" value={form.name} />
-									<SummaryRow label="Roaster" value={form.brand} />
+									<SummaryRow label="Name" value={form.name} />
+									<SummaryRow label="Brand" value={form.brand} />
+									<SummaryRow label="Process" value={form.process} />
 									<SummaryRow label="Origin" value={form.origin} />
 									<SummaryRow label="Variety" value={form.variety} />
+									<SummaryRow label="Botanic" value={form.botanic} />
+									<SummaryRow label="Designation" value={form.designation} />
 									<SummaryRow label="Roast" value={form.roastLevel} />
 									<SummaryRow label="Dominant note" value={form.dominantNote} />
 									<SummaryRow label="Flavors" value={form.flavors} />

@@ -1,6 +1,7 @@
 import { useLiveQuery } from "dexie-react-hooks";
 import { useMemo } from "react";
 import { Button } from "@/components/ui/button";
+import { deleteBean } from "@/db/crud/delete";
 import { db } from "@/db/db";
 import type { Beans } from "@/types/default";
 
@@ -30,10 +31,7 @@ export default function Database() {
 							Roast {bean.roastLevel}
 						</span>
 					) : null}
-					<Button
-						variant="destructive"
-						onClick={() => db.Beans.delete(bean.id)}
-					>
+					<Button variant="destructive" onClick={() => deleteBean(bean.id)}>
 						Delete
 					</Button>
 				</div>

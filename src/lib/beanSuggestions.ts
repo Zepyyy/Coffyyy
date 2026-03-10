@@ -2,6 +2,9 @@ import type { Beans } from "@/types/default";
 
 export type BeanSuggestions = {
 	names: Array<string>;
+	processes: Array<string>;
+	botanics: Array<string>;
+	designations: Array<string>;
 	brands: Array<string>;
 	origins: Array<string>;
 	varieties: Array<string>;
@@ -35,6 +38,9 @@ function rankByUsage(values: Array<string>): Array<string> {
 
 export function buildBeanSuggestions(beans: Array<Beans>): BeanSuggestions {
 	const names: Array<string> = [];
+	const processes: Array<string> = ["Washed", "Natural", "Honey", "?"];
+	const botanics: Array<string> = ["Arabica", "Robusta", "?"];
+	const designations: Array<string> = ["Pure Origin", "Blend", "?"];
 	const brands: Array<string> = [];
 	const origins: Array<string> = [];
 	const varieties: Array<string> = [];
@@ -44,6 +50,9 @@ export function buildBeanSuggestions(beans: Array<Beans>): BeanSuggestions {
 
 	for (const bean of beans) {
 		if (bean.name) names.push(bean.name);
+		if (bean.process) processes.push(bean.process);
+		if (bean.botanic) botanics.push(bean.botanic);
+		if (bean.designation) designations.push(bean.designation);
 		if (bean.brand) brands.push(bean.brand);
 		if (bean.dominantNote) dominantNotes.push(bean.dominantNote);
 		origins.push(...(bean.origin ?? []));
@@ -54,6 +63,9 @@ export function buildBeanSuggestions(beans: Array<Beans>): BeanSuggestions {
 
 	return {
 		names: rankByUsage(names),
+		processes: rankByUsage(processes),
+		botanics: rankByUsage(botanics),
+		designations: rankByUsage(designations),
 		brands: rankByUsage(brands),
 		origins: rankByUsage(origins),
 		varieties: rankByUsage(varieties),

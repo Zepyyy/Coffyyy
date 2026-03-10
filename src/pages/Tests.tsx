@@ -2,6 +2,8 @@ import { useLiveQuery } from "dexie-react-hooks";
 import { useMemo } from "react";
 import type { TagProps } from "@/components/tag";
 import Tag from "@/components/tag";
+import { Toggle } from "@/components/ui/toggle";
+import { ToggleGroupItem } from "@/components/ui/toggle-group";
 import { db } from "@/db/db";
 import { buildBeanSuggestions } from "@/lib/beanSuggestions";
 
@@ -39,20 +41,41 @@ export default function Tests() {
 			</p>
 			<div className="mt-6 flex flex-col gap-4">
 				{groups.map((group) => (
-					<div key={group.title} className="flex flex-col gap-2">
+					<div key={group.title} className="flex flex-col gap-2 max-w-3xl">
 						<p className="text-sm font-semibold">{group.title}</p>
-						<div className="flex flex-wrap gap-2">
-							{group.items.length === 0 ? (
-								<Tag variant="light" text="None yet" />
-							) : (
-								group.items.map((item) => (
-									<Tag
-										key={`${group.title}-${item}`}
-										variant={group.variant}
-										text={item}
-									/>
-								))
-							)}
+						<div className="flex flex-wrap gap-6 justify-between w-full ">
+							<div className="flex flex-row justify-start items-center gap-2">
+								{group.items.length === 0 ? (
+									<Tag variant="light" text="None yet" />
+								) : (
+									group.items.map((item) => (
+										<Tag
+											key={`${group.title}-${item}`}
+											variant={group.variant}
+											text={item}
+										/>
+									))
+								)}
+							</div>
+							<div className="flex flex-row justify-start items-center gap-2">
+								{group.items.length === 0 ? (
+									<Toggle />
+								) : (
+									group.items.map((item) => (
+										<Toggle
+											defaultPressed
+											key={`${group.title}-${item}`}
+											value={item}
+											color={
+												group.variant !== "light" ? group.variant : undefined
+											}
+											className="px-4"
+										>
+											{item}
+										</Toggle>
+									))
+								)}
+							</div>
 						</div>
 					</div>
 				))}

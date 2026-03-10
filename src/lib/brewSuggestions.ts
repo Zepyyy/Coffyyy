@@ -6,6 +6,7 @@ export type BrewSuggestions = {
 	overallRating: Array<string>;
 	adjustementNeeded: Array<string>;
 	aftertaste: Array<string>;
+	acidity: Array<string>;
 	bitterness: Array<string>;
 	mouthfeel: Array<string>;
 	strength: Array<string>;
@@ -62,6 +63,12 @@ export function buildBrewSuggestions(
 		"😐 Neutral",
 		"👎 Unpleasant/harsh",
 	];
+	const acidity: Array<string> = [
+		"⚡ Too sharp/sour",
+		"🍋 Bright/Lively",
+		"😊 Balanced",
+		"😴 Flat/Dull",
+	];
 	const bitterness: Array<string> = [
 		"👍 Barely noticeable",
 		"🍫 Pleasant bitter",
@@ -91,6 +98,7 @@ export function buildBrewSuggestions(
 		grindSize,
 		adjustementNeeded,
 		aftertaste,
+		acidity,
 		bitterness,
 		mouthfeel,
 		overallRating,

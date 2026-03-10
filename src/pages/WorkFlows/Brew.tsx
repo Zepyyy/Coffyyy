@@ -3,11 +3,14 @@ import { Check, CircleSmall } from "lucide-react";
 import { type ChangeEvent, type MouseEvent, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { addBrew } from "@/db/crud/add";
 import { db } from "@/db/db";
 import { buildBrewSuggestions } from "@/lib/brewSuggestions";
 
 type BrewForm = {
 	bean: string;
+	date: Date;
+	acidity: string;
 	overallRating: string;
 	grindSize: string;
 	adjustementNeeded: string;
@@ -21,6 +24,8 @@ type BrewForm = {
 
 const INITIAL_FORM: BrewForm = {
 	bean: "",
+	date: new Date(),
+	acidity: "",
 	overallRating: "",
 	grindSize: "",
 	adjustementNeeded: "",
@@ -37,6 +42,7 @@ type SingleSuggestionField =
 	| "grindSize"
 	| "adjustementNeeded"
 	| "aftertaste"
+	| "acidity"
 	| "bitterness"
 	| "mouthfeel"
 	| "strength"
@@ -185,6 +191,10 @@ export default function Brew() {
 		form.aftertaste,
 		suggestions.aftertaste,
 	);
+	const selectedAcidity = findSuggestionMatch(
+		form.acidity,
+		suggestions.acidity,
+	);
 
 	const selectedBitterness = findSuggestionMatch(
 		form.bitterness,
@@ -256,16 +266,18 @@ export default function Brew() {
 		setIsSaving(true);
 		setStatus("");
 		try {
-			await db.Brews.add({
-				bean: form.bean || undefined,
-				overallRating: form.overallRating || undefined,
-				grindSize: form.grindSize || undefined,
-				adjustementNeeded: form.adjustementNeeded || undefined,
-				aftertaste: form.aftertaste || undefined,
-				bitterness: form.bitterness || undefined,
-				mouthfeel: form.mouthfeel || undefined,
-				strength: form.strength || undefined,
-				type: form.type || undefined,
+			await addBrew({
+				bean: form.bean,
+				date: form.date,
+				overallRating: form.overallRating,
+				grindSize: form.grindSize,
+				adjustementNeeded: form.adjustementNeeded,
+				acidity: form.acidity,
+				aftertaste: form.aftertaste,
+				bitterness: form.bitterness,
+				mouthfeel: form.mouthfeel,
+				strength: form.strength,
+				type: form.type,
 				tasteProfiles: parseList(form.tasteProfiles),
 			});
 			setForm(INITIAL_FORM);
@@ -535,6 +547,44 @@ export default function Brew() {
 								/>
 							</div>
 							<div className="space-y-2">
+								<FieldLabel title="Acidity" hint="Single select available" />
+								{suggestions.acidity.length > 0 && (
+									<div className="rounded-lg border border-border/70 bg-muted/40 p-4">
+										<ToggleGroup
+											type="single"
+											size="lg"
+											spacing={2}
+											className="w-full flex-wrap justify-center"
+											value={selectedAcidity}
+											onValueChange={(value) =>
+												setSingleFromToggle(
+													"acidity",
+													suggestions.acidity,
+													value,
+												)
+											}
+										>
+											{suggestions.acidity.map((acidity) => (
+												<ToggleGroupItem
+													key={acidity}
+													value={acidity}
+													color="blueColored"
+													className="px-4"
+												>
+													{acidity}
+												</ToggleGroupItem>
+											))}
+										</ToggleGroup>
+									</div>
+								)}
+								<input
+									className="h-11 w-full rounded-lg border border-border/70 bg-background px-4 text-sm text-muted-foreground focus:text-foreground"
+									placeholder="Acidity"
+									value={form.acidity}
+									onChange={setField("acidity")}
+								/>
+							</div>
+							<div className="space-y-2">
 								<FieldLabel
 									title="Tasteprofiles"
 									hint="Single select available"
@@ -730,15 +780,20 @@ export default function Brew() {
 						<div className="space-y-4">
 							<div className="grid grid-cols-1 gap-3 md:grid-cols-2">
 								<SummaryRow label="Bean" value={form.bean} />
-								<SummaryRow label="Roaster" value={form.grindSize} />
-								<SummaryRow label="Origin" value={form.overallRating} />
-								<SummaryRow label="Variety" value={form.adjustementNeeded} />
-								<SummaryRow label="Roast" value={form.aftertaste} />
-								<SummaryRow label="Dominant note" value={form.bitterness} />
-								<SummaryRow label="Flavors" value={form.mouthfeel} />
-								<SummaryRow label="type" value={form.type} />
-								<SummaryRow label="strength" value={form.strength} />
-								<SummaryRow label="tasteProfiles" value={form.tasteProfiles} />
+								<SummaryRow label="Grind Size" value={form.grindSize} />
+								<SummaryRow label="Rating" value={form.overallRating} />
+								<SummaryRow
+									label="Adjustement Needed"
+									value={form.adjustementNeeded}
+								/>
+								<SummaryRow label="Aftertaste" value={form.aftertaste} />
+								<SummaryRow label="Acidity" value={form.acidity} />
+								<SummaryRow label="Date" value={form.date.toDateString()} />
+								<SummaryRow label="Bitterness" value={form.bitterness} />
+								<SummaryRow label="Mouthfeel" value={form.mouthfeel} />
+								<SummaryRow label="Type" value={form.type} />
+								<SummaryRow label="Strength" value={form.strength} />
+								<SummaryRow label="Taste Profiles" value={form.tasteProfiles} />
 							</div>
 							{status && (
 								<p

@@ -2,20 +2,20 @@ import { cva, type VariantProps } from "class-variance-authority";
 import clsx from "clsx";
 
 const colorVariant = cva(
-	"cursor-pointer flex items-center text-xs md:text-sm font-semibold tracking-tight px-2 py-1 rounded-lg text-foreground-tag border",
+	"cursor-pointer flex items-center text-xs md:text-sm font-semibold tracking-tight px-2 py-1 rounded-lg border",
 	{
 		variants: {
 			variant: {
 				greenColored:
-					"bg-tag-green-900 border-tag-green-100 shadow-xs hover:bg-tag-green-900/50 ",
+					"bg-tag-green-900 border-tag-green-100 shadow-xs hover:bg-tag-green-900/50 text-tag-green-100",
 				yellowColored:
-					"bg-tag-yellow-900 border-tag-yellow-100 shadow-xs hover:bg-tag-yellow-900/50 ",
+					"bg-tag-yellow-900 border-tag-yellow-100 shadow-xs hover:bg-tag-yellow-900/50 text-tag-yellow-100",
 				blueColored:
-					"bg-tag-blue-900 border-tag-blue-100 shadow-xs hover:bg-tag-blue-900/50 ",
+					"bg-tag-blue-900 border-tag-blue-100 shadow-xs hover:bg-tag-blue-900/50 text-tag-blue-100",
 				redColored:
-					"bg-tag-red-900 border-tag-red-100 shadow-xs hover:bg-tag-red-900/50 ",
+					"bg-tag-red-900 border-tag-red-100 shadow-xs hover:bg-tag-red-900/50 text-tag-red-100",
 				purpleColored:
-					"bg-tag-purple-900 border-tag-purple-100 shadow-xs hover:bg-tag-purple-900/50 ",
+					"bg-tag-purple-900 border-tag-purple-100 shadow-xs hover:bg-tag-purple-900/50 text-tag-purple-100",
 				light:
 					"border-1 border-primary border-dashed bg-transparent hover:bg-accent dark:bg-input/30 dark:border-input dark:hover:bg-input/50",
 				default: "bg-background/80 border-background/80 hover:bg-background/50",

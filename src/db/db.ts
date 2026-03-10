@@ -15,8 +15,4 @@ db.version(1).stores({
 		"++id, bean, overallRating, grindSize, date, acidity, adjustementNeeded, aftertaste",
 });
 
-db.on("populate", () => {
-	db.Machines.bulkAdd([{ name: "" }]);
-});
-
 export { db };
