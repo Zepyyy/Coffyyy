@@ -60,7 +60,7 @@ export default function Home() {
 	const beanMax = Math.max(1, ...beanRanked.map((r) => r.value));
 
 	return (
-		<div className="space-y-6">
+		<div className="space-y-6 flex-1 mx-auto w-full px-4 py-6 relative max-w-5xl">
 			{/* Hero actions */}
 			<div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
 				<Link

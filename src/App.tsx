@@ -15,7 +15,7 @@ export default function App() {
 	const { theme, toggleTheme } = useTheme();
 
 	return (
-		<div className="min-h-screen bg-background text-foreground flex flex-col">
+		<div className="min-h-screen text-foreground flex flex-col diamond-bg">
 			<header className="sticky top-0 z-50 h-14 border-b border-border bg-background/95 backdrop-blur-sm">
 				<div className="mx-auto flex h-full max-w-5xl items-center justify-between px-4">
 					<span className="text-base font-bold tracking-tight select-none">
@@ -52,7 +52,7 @@ export default function App() {
 				</div>
 			</header>
 
-			<main className="flex-1 mx-auto w-full max-w-5xl px-4 py-6">
+			<main className="flex-1 mx-auto w-full px-4 py-6 relative">
 				<Outlet />
 			</main>
 

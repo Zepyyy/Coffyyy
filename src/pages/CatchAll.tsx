@@ -23,7 +23,7 @@ export function CatchAll() {
 	}
 
 	return (
-		<div className="flex flex-col items-center justify-center h-full min-h-[60vh] gap-6 text-center px-4">
+		<div className="flex flex-col items-center justify-center h-full min-h-[60vh] gap-6 text-center flex-1 mx-auto w-full px-4 py-6 relative max-w-5xl">
 			<button
 				type="button"
 				onClick={nextExcuse}

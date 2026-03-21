@@ -21,6 +21,23 @@ const ROAST_COLORS: Record<number, string> = {
 	10: "bg-tag-purple-900 text-tag-purple-100 dark:bg-tag-purple-900 dark:text-tag-purple-100 dark:border-tag-purple-100 dark:border",
 };
 
+function SomethingHere() {
+	return (
+		<div className="rounded-xl bg-primary/5 border border-primary/15 p-4 space-y-3">
+			<p className="text-2xl font-bold text-ellipsis overflow-hidden">
+				Something here
+			</p>
+			<div className="squiggly-line" />
+			<ul>
+				<li> Maybe </li>
+				<li>a </li>
+				<li>list </li>
+				<li>there </li>
+			</ul>
+		</div>
+	);
+}
+
 function BeanCard({ bean }: { bean: Beans }) {
 	const [confirmDelete, setConfirmDelete] = useState(false);
 
@@ -264,7 +281,7 @@ export default function Library() {
 	}, [sortedMachines, search]);
 
 	return (
-		<div className="space-y-6">
+		<div className="space-y-6 flex-1 mx-auto w-full px-4 py-6 relative max-w-5xl">
 			<div className="flex flex-wrap items-center justify-between gap-3">
 				<div>
 					<h1 className="text-3xl font-bold tracking-tight">Library</h1>

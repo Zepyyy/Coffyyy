@@ -343,7 +343,7 @@ export default function Brews() {
 	const [sortMode, setSortMode] = useState<SortMode>("newest");
 	const [page, setPage] = useState(1);
 
-	const sourceBrews = brews ?? [];
+	const sourceBrews = useMemo(() => brews ?? [], [brews]);
 	const totalBrews = sourceBrews.length;
 	const uniqueBeans = new Set(
 		sourceBrews
@@ -403,7 +403,7 @@ export default function Brews() {
 	}
 
 	return (
-		<div className="space-y-6">
+		<div className="space-y-6 flex-1 mx-auto w-full px-4 py-6 relative max-w-5xl">
 			<div>
 				<h1 className="text-3xl font-bold tracking-tight">Brews</h1>
 				<p className="mt-1 text-sm text-muted-foreground">
