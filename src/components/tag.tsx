@@ -16,6 +16,8 @@ const colorVariant = cva(
 					"bg-tag-red-900 border-tag-red-100 shadow-xs hover:bg-tag-red-900/50 text-tag-red-100",
 				purpleColored:
 					"bg-tag-purple-900 border-tag-purple-100 shadow-xs hover:bg-tag-purple-900/50 text-tag-purple-100",
+				orangeColored:
+					"bg-tag-orange-900 border-tag-orange-100 shadow-xs hover:bg-tag-orange-900/50 text-tag-orange-100",
 				light:
 					"border-1 border-primary border-dashed bg-transparent hover:bg-accent dark:bg-input/30 dark:border-input dark:hover:bg-input/50",
 				default: "bg-background/80 border-background/80 hover:bg-background/50",

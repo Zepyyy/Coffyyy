@@ -9,7 +9,15 @@ export type Beans = {
 	rating: number; // Edit
 	status: "Excellent" | "Good" | "Mid" | "Horrible" | "New" | "?"; // Edit
 	tastingNotes: string[]; // Add, Edit
-	dominantNote: string; // Add, Edit
+	dominantNote:
+		| "Fruity"
+		| "Nutty"
+		| "Floral"
+		| "Sweet"
+		| "Sour"
+		| "Spices"
+		| "Roasted"
+		| "Green";
 	roastLevel: number; // Add, Edit
 	origin: string[]; // Add, Edit
 	process: "Washed" | "Natural" | "Honey" | "?"; // Add, Edit

@@ -44,7 +44,16 @@ export function buildBeanSuggestions(beans: Array<Beans>): BeanSuggestions {
 	const brands: Array<string> = [];
 	const origins: Array<string> = [];
 	const varieties: Array<string> = [];
-	const dominantNotes: Array<string> = [];
+	const dominantNotes: Array<string> = [
+		"Fruity",
+		"Nutty",
+		"Floral",
+		"Sweet",
+		"Sour",
+		"Spices",
+		"Roasted",
+		"Green",
+	];
 	const flavors: Array<string> = [];
 	const tastingNotes: Array<string> = [];
 

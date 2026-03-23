@@ -135,7 +135,7 @@ function MultiChips({
 									: "bg-muted text-muted-foreground hover:bg-muted/70 hover:text-foreground",
 							)}
 						>
-							{s}
+							{s} *
 						</button>
 					))}
 				</div>
@@ -248,7 +248,15 @@ export default function Beans() {
 				origin: form.origin,
 				variety: form.variety,
 				roastLevel: Number.isFinite(roast) && roast > 0 ? roast : -1,
-				dominantNote: form.dominantNote,
+				dominantNote: (form.dominantNote || "?") as
+					| "Fruity"
+					| "Sweet"
+					| "Nutty"
+					| "Floral"
+					| "Sour"
+					| "Spices"
+					| "Roasted"
+					| "Green",
 				flavors: form.flavors,
 				tastingNotes: form.tastingNotes,
 				finished: false,
@@ -411,30 +419,10 @@ export default function Beans() {
 
 					<div className="space-y-1.5">
 						<FieldLabel>Dominant note</FieldLabel>
-						{suggestions.dominantNotes.length > 0 && (
-							<div className="flex flex-wrap gap-1.5 mb-1.5">
-								{suggestions.dominantNotes.map((n) => (
-									<button
-										key={n}
-										type="button"
-										onClick={() => setField("dominantNote", n)}
-										className={cn(
-											"px-3 py-1.5 rounded-lg text-sm font-medium transition-colors",
-											form.dominantNote === n
-												? "bg-foreground text-background"
-												: "bg-muted text-muted-foreground hover:bg-muted/70 hover:text-foreground",
-										)}
-									>
-										{n}
-									</button>
-								))}
-							</div>
-						)}
-						<input
-							className="h-11 w-full rounded-lg border border-border/70 bg-background px-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring"
-							placeholder="e.g. Fruity, Chocolatey…"
+						<OptionChips
+							options={suggestions.dominantNotes}
 							value={form.dominantNote}
-							onChange={(e) => setField("dominantNote", e.target.value)}
+							onChange={(v) => setField("dominantNote", v)}
 						/>
 					</div>
 

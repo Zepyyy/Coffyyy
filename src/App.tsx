@@ -6,6 +6,7 @@ import { cn } from "./lib/utils";
 
 const NAV_LINKS = [
 	{ to: "/home", label: "Home" },
+	{ to: "/designsystem", label: "Design System" },
 	{ to: "/log", label: "Log" },
 	{ to: "/library", label: "Library" },
 	{ to: "/brews", label: "Brews" },
@@ -22,7 +23,7 @@ export default function App() {
 						Coffyyy
 					</span>
 
-					<nav className="flex items-center gap-0.5">
+					<nav className="items-center gap-0.5 sm:flex hidden">
 						{NAV_LINKS.map(({ to, label }) => (
 							<NavLink
 								key={to}
