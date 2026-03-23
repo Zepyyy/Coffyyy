@@ -4,6 +4,8 @@ import { Link } from "react-router";
 import BeanCard from "@/components/library/BeanCard";
 import FilterCard from "@/components/library/FilterCard";
 import MachineCard from "@/components/library/MachineCard";
+import { Button } from "@/components/ui/button";
+import { addRandomBean, addRandomMachine } from "@/db/crud/add";
 import { db } from "@/db/db";
 import { cn } from "@/lib/utils";
 
@@ -175,7 +177,7 @@ export default function Library() {
 
 	return (
 		<div className="flex relative">
-			<div className="sm:flex flex-col hidden h-fit flex-wrap space-y-4 sticky top-1/10 left-10 mx-6">
+			<div className="sm:flex flex-col hidden h-fit flex-wrap space-y-4 sticky top-20 left-10 mx-6">
 				<div className="border-l-5 border-primary-200 pl-5 mb-6">
 					<h1 className="text-5xl tracking-tight font-News italic text-foreground/90">
 						Library
@@ -185,16 +187,16 @@ export default function Library() {
 					</p>
 				</div>
 				<div className="flex-wrap min-w-fit max-w-1/2 mx-auto my-4">
-					<div className="flex items-center gap-1 rounded-xl bg-muted p-1 w-fit">
+					<div className="flex items-center gap-1 rounded-xl bg-background/15 w-fit">
 						{(["beans", "machines"] as Tab[]).map((t) => (
 							<button
 								key={t}
 								type="button"
 								onClick={() => setTab(t)}
 								className={cn(
-									"px-4 py-1.5 rounded-lg text-sm font-medium transition-opacity capitalize",
+									"px-4 py-1.5 text-sm font-medium transition-opacity capitalize",
 									tab === t
-										? "bg-background text-foreground shadow-sm"
+										? "bg-primary-200/15 text-foreground border-primary-200 border border-b-4"
 										: "text-muted-foreground hover:text-foreground",
 								)}
 							>
@@ -247,6 +249,16 @@ export default function Library() {
 							</>
 						)}
 					</div>
+					<Button className="" variant={"add"} onClick={() => addRandomBean()}>
+						Add Bean
+					</Button>
+					<Button
+						className=""
+						variant={"add"}
+						onClick={() => addRandomMachine()}
+					>
+						Add Machine
+					</Button>
 				</div>
 			</div>
 			<div className="flex max-w-7xl mx-auto">

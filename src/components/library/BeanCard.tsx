@@ -120,6 +120,7 @@ export default function BeanCard({ bean }: { bean: Beans }) {
 	const [confirmDelete, setConfirmDelete] = useState(false);
 	const NoteIcon = noteBadge[bean.dominantNote]?.icon ?? FileQuestion;
 	const tastingNotes = bean.tastingNotes.join(", ");
+	const origin = bean.origin.join(", ");
 
 	const parameters: Parameter[] = [
 		{ label: "Origin", values: bean.origin },
@@ -128,7 +129,7 @@ export default function BeanCard({ bean }: { bean: Beans }) {
 	];
 
 	return (
-		<div className="border border-primary/15 text-nowrap overflow-hidden z-20 relative bg-background">
+		<div className="border border-primary/15 text-nowrap overflow-hidden z-20 relative bg-background min-h-fit my-2 mx-1">
 			<div
 				className={cn(
 					"p-6 space-y-6 relative",
@@ -165,7 +166,7 @@ export default function BeanCard({ bean }: { bean: Beans }) {
 							colorSwatch[bean.dominantNote]?.secondaryTextColor,
 						)}
 					>
-						{bean.origin} / {/*{bean.country && bean.country} */} El Paraiso
+						{origin} / {/*{bean.country && bean.country} */} El Paraiso
 					</div>
 				</article>
 			</div>
