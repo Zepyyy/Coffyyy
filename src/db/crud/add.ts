@@ -51,6 +51,24 @@ async function addRandomMachine() {
 		return error;
 	}
 }
+async function addRandomMachine2() {
+	try {
+		return await db.Machines.bulkAdd([
+			{
+				name: "Random Machine",
+				brand: "Sage",
+				capacity: "capacity 2",
+				grindRange: "fine",
+				purchaseDate: "qsd",
+				induction: false,
+				model: "MODEL",
+				type: "Moka Pot",
+			} as Omit<Machines, "id">,
+		]);
+	} catch (error) {
+		return error;
+	}
+}
 async function addBrew(brew: Omit<Brews, "id">) {
 	try {
 		return await db.Brews.bulkAdd([brew]);
@@ -67,4 +85,11 @@ async function addMachine(machine: Omit<Machines, "id">) {
 	}
 }
 
-export { addBean, addBrew, addMachine, addRandomBean, addRandomMachine };
+export {
+	addBean,
+	addBrew,
+	addMachine,
+	addRandomBean,
+	addRandomMachine,
+	addRandomMachine2,
+};

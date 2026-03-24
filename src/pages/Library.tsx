@@ -5,7 +5,11 @@ import BeanCard from "@/components/library/BeanCard";
 import FilterCard from "@/components/library/FilterCard";
 import MachineCard from "@/components/library/MachineCard";
 import { Button } from "@/components/ui/button";
-import { addRandomBean, addRandomMachine } from "@/db/crud/add";
+import {
+	addRandomBean,
+	addRandomMachine,
+	addRandomMachine2,
+} from "@/db/crud/add";
 import { db } from "@/db/db";
 import { cn } from "@/lib/utils";
 
@@ -249,16 +253,29 @@ export default function Library() {
 							</>
 						)}
 					</div>
-					<Button className="" variant={"add"} onClick={() => addRandomBean()}>
-						Add Bean
-					</Button>
-					<Button
-						className=""
-						variant={"add"}
-						onClick={() => addRandomMachine()}
-					>
-						Add Machine
-					</Button>
+					<div className="flex flex-col">
+						<Button
+							className=""
+							variant={"add"}
+							onClick={() => addRandomBean()}
+						>
+							Add Bean
+						</Button>
+						<Button
+							className=""
+							variant={"add"}
+							onClick={() => addRandomMachine()}
+						>
+							Add Espresso
+						</Button>
+						<Button
+							className=""
+							variant={"add"}
+							onClick={() => addRandomMachine2()}
+						>
+							Add Moka Pot
+						</Button>
+					</div>
 				</div>
 			</div>
 			<div className="flex max-w-7xl mx-auto">

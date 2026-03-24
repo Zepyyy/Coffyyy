@@ -251,12 +251,12 @@ export default function DesignSystem() {
 						<div className="flex flex-wrap items-center gap-2">
 							<Tag variant="default" text="Default" />
 							<Tag variant="light" text="Light" />
-							<Tag variant="greenColored" text="Green" />
-							<Tag variant="yellowColored" text="Yellow" />
-							<Tag variant="blueColored" text="Blue" />
-							<Tag variant="redColored" text="Red" />
-							<Tag variant="purpleColored" text="Purple" />
-							<Tag variant="orangeColored" text="Orange" />
+							<Tag variant="green" text="Green" />
+							<Tag variant="yellow" text="Yellow" />
+							<Tag variant="blue" text="Blue" />
+							<Tag variant="red" text="Red" />
+							<Tag variant="purple" text="Purple" />
+							<Tag variant="orange" text="Orange" />
 						</div>
 					</div>
 
@@ -267,7 +267,7 @@ export default function DesignSystem() {
 						<Toggle
 							pressed={togglePressed}
 							onPressedChange={setTogglePressed}
-							color="greenColored"
+							variant="green"
 							aria-label="Sample toggle"
 						>
 							{togglePressed ? "Enabled" : "Disabled"}
@@ -285,7 +285,7 @@ export default function DesignSystem() {
 								if (value) setViewMode(value);
 							}}
 							spacing={2}
-							color="purpleColored"
+							variant="purple"
 						>
 							<ToggleGroupItem value="components">Components</ToggleGroupItem>
 							<ToggleGroupItem value="colors">Colors</ToggleGroupItem>
@@ -311,7 +311,7 @@ export default function DesignSystem() {
 							</p>
 						</div>
 						<div className="flex items-center gap-2">
-							<Tag variant="blueColored" text="Info" />
+							<Tag variant="blue" text="Info" />
 							<Button size="sm">Primary action</Button>
 						</div>
 					</div>

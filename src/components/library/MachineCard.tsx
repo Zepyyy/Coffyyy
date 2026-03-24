@@ -19,10 +19,8 @@ export default function MachineCard({ machine }: { machine: Machines }) {
 				<Tag
 					text={machine.type}
 					size="sm"
-					variant={
-						machine.type === "Espresso" ? "blueColored" : "purpleColored"
-					}
-					className="absolute top-0 right-3 border-t-0 rounded-t-none pt-6"
+					variant={machine.type === "Espresso" ? "blue" : "purple"}
+					className="absolute top-0 right-3 border-t-0 border-dashed rounded-t-none pt-2"
 				/>
 			</article>
 
@@ -61,19 +59,9 @@ export default function MachineCard({ machine }: { machine: Machines }) {
 				</div>
 				<div className="text-foreground font-medium font-Recursive text-sm">
 					{machine.induction ? (
-						<Tag
-							text="Yes"
-							variant={"light"}
-							size="sm"
-							className="px-1.5! py-0.5!"
-						/>
+						<Tag text="Yes" color={"green"} size="sm" />
 					) : (
-						<Tag
-							text="No"
-							variant={"light"}
-							size="sm"
-							className="px-1.5! py-0.5!"
-						/>
+						<Tag text="No" color={"blue"} size="sm" />
 					)}
 				</div>
 			</article>

@@ -1,10 +1,10 @@
 "use client";
 
-import { type VariantProps } from "class-variance-authority";
+import type { VariantProps } from "class-variance-authority";
 import { ToggleGroup as ToggleGroupPrimitive } from "radix-ui";
 import * as React from "react";
-import { toggleVariants } from "@/components/ui/toggle";
 import { cn } from "@/lib/utils";
+import { toggleVariants } from "./toggleVariants";
 
 const ToggleGroupContext = React.createContext<
 	VariantProps<typeof toggleVariants> & {
@@ -13,7 +13,6 @@ const ToggleGroupContext = React.createContext<
 >({
 	size: "default",
 	variant: "default",
-	color: "default",
 	spacing: 0,
 });
 
@@ -21,7 +20,6 @@ function ToggleGroup({
 	className,
 	variant,
 	size,
-	color,
 	spacing = 0,
 	children,
 	...props
@@ -54,7 +52,6 @@ function ToggleGroupItem({
 	children,
 	variant,
 	size,
-	color,
 	...props
 }: React.ComponentProps<typeof ToggleGroupPrimitive.Item> &
 	VariantProps<typeof toggleVariants>) {
@@ -70,7 +67,6 @@ function ToggleGroupItem({
 				toggleVariants({
 					variant: context.variant || variant,
 					size: context.size || size,
-					color: context.color || color,
 				}),
 				"w-auto min-w-0 shrink-0 px-3 focus:z-10 focus-visible:z-10",
 				"data-[spacing=0]:rounded-none data-[spacing=0]:shadow-none data-[spacing=0]:first:rounded-l-md data-[spacing=0]:last:rounded-r-md data-[spacing=0]:data-[variant=outline]:border-l-0 data-[spacing=0]:data-[variant=outline]:first:border-l",
