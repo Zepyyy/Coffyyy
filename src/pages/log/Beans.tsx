@@ -242,9 +242,19 @@ export default function Beans() {
 				brand: form.brand,
 				rating: 0,
 				status: "New",
-				process: (form.process || "?") as "Washed" | "Natural" | "Honey" | "?",
-				botanic: (form.botanic || "?") as "Arabica" | "Robusta" | "?",
-				designation: (form.designation || "?") as "Pure Origin" | "Blend" | "?",
+				process: (form.process || "default") as
+					| "Washed"
+					| "Natural"
+					| "Honey"
+					| "default",
+				botanic: (form.botanic || "default") as
+					| "Arabica"
+					| "Robusta"
+					| "default",
+				designation: (form.designation || "?") as
+					| "Pure Origin"
+					| "Blend"
+					| "default",
 				origin: form.origin,
 				variety: form.variety,
 				roastLevel: Number.isFinite(roast) && roast > 0 ? roast : -1,
