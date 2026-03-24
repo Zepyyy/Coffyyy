@@ -21,7 +21,7 @@ export function buildMachineSuggestions(
 	const names: Array<string> = [];
 	const brands: Array<string> = [];
 	const models: Array<string> = [];
-	const types: Array<string> = [];
+	const types: Array<string> = ["Espresso", "Moka Pot"];
 	const grindRanges: Array<string> = [];
 	const capacities: Array<string> = [];
 

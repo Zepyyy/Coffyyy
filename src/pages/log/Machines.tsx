@@ -9,7 +9,7 @@ type MachineForm = {
 	name: string;
 	brand: string;
 	model: string;
-	type: string;
+	type: "Espresso" | "Moka Pot";
 	grindRange: string;
 	capacity: string;
 	purchaseDate: string;
@@ -20,7 +20,7 @@ const INITIAL: MachineForm = {
 	name: "",
 	brand: "",
 	model: "",
-	type: "",
+	type: "Espresso",
 	grindRange: "",
 	capacity: "",
 	purchaseDate: "",
@@ -125,7 +125,7 @@ export default function Machines() {
 				name: normalizeOptional(form.name),
 				brand: normalizeOptional(form.brand),
 				model: normalizeOptional(form.model),
-				type: normalizeOptional(form.type),
+				type: form.type,
 				grindRange: normalizeOptional(form.grindRange),
 				capacity: normalizeOptional(form.capacity),
 				purchaseDate: normalizeOptional(form.purchaseDate),
@@ -213,13 +213,7 @@ export default function Machines() {
 						<SuggestionChips
 							options={suggestions.types}
 							value={form.type}
-							onChange={(v) => setField("type", v)}
-						/>
-						<input
-							className="h-11 w-full rounded-lg border border-border/70 bg-background px-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring"
-							placeholder="e.g. Espresso, Filter, Grinder, Moka Pot"
-							value={form.type}
-							onChange={(e) => setField("type", e.target.value)}
+							onChange={(v) => setField("type", v as "Espresso" | "Moka Pot")}
 						/>
 					</div>
 
