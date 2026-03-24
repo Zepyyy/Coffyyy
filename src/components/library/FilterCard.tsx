@@ -25,7 +25,7 @@ export default function FilterCard({
 				{options.map((option) => (
 					<li
 						className={cn(
-							"flex items-center justify-between group cursor-pointer transition-colors",
+							"flex items-center justify-between group cursor-pointer transition-colors gap-12",
 							option.active
 								? "text-foreground"
 								: "text-primary-800/70 dark:text-primary-200 hover:text-foreground hover:dark:text-foreground",

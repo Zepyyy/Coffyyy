@@ -1,4 +1,7 @@
 import { useState } from "react";
+import BeanCard from "@/components/library/BeanCard";
+import FilterCard from "@/components/library/FilterCard";
+import MachineCard from "@/components/library/MachineCard";
 import Tag from "@/components/tag";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -291,6 +294,61 @@ export default function DesignSystem() {
 							<ToggleGroupItem value="colors">Colors</ToggleGroupItem>
 							<ToggleGroupItem value="type">Type</ToggleGroupItem>
 						</ToggleGroup>
+					</div>
+				</div>
+			</Section>
+
+			<Section
+				title="Library Cards"
+				description="A collection of reusable card components for displaying beans and machines."
+			>
+				<div className="gap-4 w-full flex justify-around">
+					<div className="flex shrink-0">
+						<FilterCard
+							key={"2"}
+							onToggle={() => {}}
+							options={[
+								{ label: "Option 1", count: 2, active: true },
+								{ label: "Option 2", count: 1, active: false },
+								{ label: "Option 3", count: 1, active: false },
+								{ label: "Another option", count: 1, active: false },
+							]}
+							title="Filter Card"
+						/>
+					</div>
+					<div className="flex max-w-3/4 w-full gap-4">
+						<BeanCard
+							bean={{
+								id: 123,
+								botanic: "Arabica",
+								brand: "BeanBrand",
+								dominantNote: "Floral",
+								designation: "default",
+								roastLevel: 4,
+								finished: false,
+								flavors: [""],
+								name: "Bean Card",
+								origin: ["Origin"],
+								rating: 4,
+								process: "default",
+								status: "Excellent",
+								tastingNotes: ["default", "default", "default"],
+								variety: ["Variety"],
+							}}
+						/>
+						<MachineCard
+							machine={{
+								id: 123,
+								name: "Machine Card",
+								type: "Espresso",
+								capacity: "123",
+								brand: "Placeholder",
+								grindRange: "123",
+								induction: false,
+								model: "Placeholder",
+								purchaseDate: "01-01-2024",
+							}}
+						/>
 					</div>
 				</div>
 			</Section>

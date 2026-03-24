@@ -7,7 +7,7 @@ export type Beans = {
 	id: number;
 	name: string; // Add, Edit
 	rating: number; // Edit
-	status: "Excellent" | "Good" | "Mid" | "Horrible" | "New" | "?"; // Edit
+	status: "Excellent" | "Good" | "Mid" | "Horrible" | "New" | "default"; // Edit
 	tastingNotes: string[]; // Add, Edit
 	dominantNote:
 		| "Fruity"
@@ -20,11 +20,11 @@ export type Beans = {
 		| "Green";
 	roastLevel: number; // Add, Edit
 	origin: string[]; // Add, Edit
-	process: "Washed" | "Natural" | "Honey" | "?"; // Add, Edit
+	process: "Washed" | "Natural" | "Honey" | "default"; // Add, Edit
 	variety: string[]; // Add, Edit
 	brand: string; // Add, Edit
-	botanic: "Arabica" | "Robusta" | "?"; // Add, Edit
-	designation: "Pure Origin" | "Blend" | "?"; // Add, Edit
+	botanic: "Arabica" | "Robusta" | "default"; // Add, Edit
+	designation: "Pure Origin" | "Blend" | "default"; // Add, Edit
 	flavors: string[]; // Add, Edit
 	finished: boolean; // Add(false), Edit
 };
@@ -49,7 +49,7 @@ export type Machines = {
 	id: number;
 	name?: string;
 	brand?: string;
-	type: "Espresso" | "Moka Pot";
+	type: "Espresso" | "Moka Pot" | "default";
 	purchaseDate?: string;
 	model?: string;
 	induction?: boolean;
