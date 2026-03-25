@@ -1,21 +1,28 @@
 import {
 	AlertCircle,
+	Check,
 	CheckCircle,
 	ChevronDown,
 	ChevronRight,
 	Coffee,
+	Cpu,
+	Flower,
+	ForkKnife,
 	Search,
 	XCircle,
 } from "lucide-react";
 import { useState } from "react";
+import Header from "@/components/Header";
 import BeanCard from "@/components/library/BeanCard";
 import FilterCard from "@/components/library/FilterCard";
 import MachineCard from "@/components/library/MachineCard";
+import QuickCard from "@/components/QuickCard";
 import Tag from "@/components/tag";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Toggle } from "@/components/ui/toggle";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import type { BeanCardProps } from "@/types/default";
 
 type SwatchToken = {
 	name: string;
@@ -1177,6 +1184,575 @@ export default function DesignSystem() {
 									3 of 4 brews
 								</p>
 							</div>
+						</div>
+					</div>
+				</div>
+			</Section>
+
+			{/* ── LOG FORM COMPONENTS ─────────────────────────────────────────── */}
+
+			<Section
+				title="Log Form Components"
+				description="Redesigned primitives for the brew / bean / machine log forms — targeted at replacing the startup-chip aesthetic."
+			>
+				<div className="space-y-8">
+					{/* ── BEAN PICKER ── */}
+					<div className="space-y-3">
+						<SectionLabel>
+							Bean Picker — compact grid tiles (recommended)
+						</SectionLabel>
+						<p className="font-Recursive text-sm text-muted-foreground -mt-1">
+							Scales to many beans. The color bar communicates dominant note at
+							a glance. Name truncates gracefully.
+						</p>
+						<div className="relative max-w-xs">
+							<Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
+							<input
+								readOnly
+								className="w-full border border-border bg-background pl-8 pr-3 py-1.5 font-Mono text-xs uppercase tracking-widest placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/40 rounded-none"
+								placeholder="Filter beans…"
+							/>
+						</div>
+						<div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+							{[
+								{
+									name: "Ethiopia Yirgacheffe",
+									origin: "Ethiopia",
+									process: "Natural",
+									color: "bg-tag-teal-900",
+									selected: true,
+								},
+								{
+									name: "Colombia Huila",
+									origin: "Colombia",
+									process: "Washed",
+									color: "bg-tag-orange-900",
+									selected: false,
+								},
+								{
+									name: "Kenya AA",
+									origin: "Kenya",
+									process: "Washed",
+									color: "bg-tag-blue-900",
+									selected: false,
+								},
+								{
+									name: "Guatemala Antigua",
+									origin: "Guatemala",
+									process: "Honey",
+									color: "bg-tag-yellow-900",
+									selected: false,
+								},
+								{
+									name: "Brazil Cerrado",
+									origin: "Brazil",
+									process: "Natural",
+									color: "bg-tag-red-900",
+									selected: false,
+								},
+								{
+									name: "Panama Gesha",
+									origin: "Panama",
+									process: "Washed",
+									color: "bg-tag-purple-900",
+									selected: false,
+								},
+								{
+									name: "Yemen Mocha",
+									origin: "Yemen",
+									process: "Natural",
+									color: "bg-tag-green-900",
+									selected: false,
+								},
+								{
+									name: "Costa Rica SHB",
+									origin: "Costa Rica",
+									process: "Honey",
+									color: "bg-tag-teal-900",
+									selected: false,
+								},
+							].map((bean) => (
+								<div
+									key={bean.name}
+									className={`relative cursor-pointer overflow-hidden border transition-all ${
+										bean.selected
+											? "border-primary bg-primary/5"
+											: "border-border bg-background hover:border-primary/40"
+									}`}
+								>
+									<div className={`h-1 w-full ${bean.color}`} />
+									<div className="px-2.5 py-2">
+										<p className="font-Lora text-sm font-semibold leading-snug line-clamp-1">
+											{bean.name}
+										</p>
+										<p className="mt-0.5 font-Mono text-[9px] uppercase tracking-widest text-muted-foreground line-clamp-1">
+											{bean.origin} · {bean.process}
+										</p>
+									</div>
+									{bean.selected && (
+										<div className="absolute right-1.5 top-2.5 flex size-4 items-center justify-center rounded-full bg-primary">
+											<Check className="size-2.5 text-primary-foreground" />
+										</div>
+									)}
+								</div>
+							))}
+						</div>
+					</div>
+
+					<Separator />
+
+					{/* ── BEAN PICKER ALT ── */}
+					<div className="space-y-3">
+						<SectionLabel>
+							Bean Picker — color-dot chips (alt, fewer beans)
+						</SectionLabel>
+						<div className="flex flex-wrap gap-2">
+							{[
+								{
+									name: "Ethiopia Yirgacheffe",
+									color: "bg-tag-teal-900",
+									selected: true,
+								},
+								{
+									name: "Colombia Huila",
+									color: "bg-tag-orange-900",
+									selected: false,
+								},
+								{ name: "Kenya AA", color: "bg-tag-blue-900", selected: false },
+								{
+									name: "Guatemala Antigua",
+									color: "bg-tag-yellow-900",
+									selected: false,
+								},
+								{
+									name: "Brazil Cerrado",
+									color: "bg-tag-red-900",
+									selected: false,
+								},
+							].map((bean) => (
+								<button
+									key={bean.name}
+									type="button"
+									className={`flex items-center gap-2 border px-3 py-1.5 transition-all ${
+										bean.selected
+											? "border-primary bg-primary/5"
+											: "border-border bg-background hover:border-primary/30"
+									}`}
+								>
+									<span
+										className={`size-2.5 shrink-0 rounded-full ${bean.color}`}
+									/>
+									<span className="font-Recursive text-sm">{bean.name}</span>
+									{bean.selected && (
+										<Check className="ml-0.5 size-3 text-primary" />
+									)}
+								</button>
+							))}
+						</div>
+					</div>
+
+					<Separator />
+
+					{/* ── MACHINE PICKER ── */}
+					<div className="space-y-3">
+						<SectionLabel>Machine Picker — horizontal mini-cards</SectionLabel>
+						<p className="font-Recursive text-sm text-muted-foreground -mt-1">
+							Machines are typically few. Scrollable strip with a colored
+							avatar, name, and brand.
+						</p>
+						<div className="flex gap-2 overflow-x-auto pb-1">
+							{[
+								{
+									name: "Aeropress",
+									brand: "Aerobie",
+									abbr: "AP",
+									color: "bg-tag-teal-900",
+									selected: true,
+								},
+								{
+									name: "Gaggia Classic",
+									brand: "Gaggia",
+									abbr: "ESP",
+									color: "bg-tag-blue-900",
+									selected: false,
+								},
+								{
+									name: "V60 02",
+									brand: "Hario",
+									abbr: "V60",
+									color: "bg-tag-green-900",
+									selected: false,
+								},
+								{
+									name: "Chemex 6c",
+									brand: "Chemex",
+									abbr: "CHX",
+									color: "bg-tag-yellow-900",
+									selected: false,
+								},
+								{
+									name: "Moka Pot",
+									brand: "Bialetti",
+									abbr: "MKP",
+									color: "bg-tag-orange-900",
+									selected: false,
+								},
+							].map((m) => (
+								<div
+									key={m.name}
+									className={`shrink-0 flex cursor-pointer items-center gap-2.5 border px-3 py-2.5 transition-all ${
+										m.selected
+											? "border-primary bg-primary/5"
+											: "border-border bg-background hover:border-primary/30"
+									}`}
+								>
+									<div
+										className={`${m.color} flex size-8 shrink-0 items-center justify-center rounded-full`}
+									>
+										<span className="font-Mono text-[8px] uppercase tracking-wide text-white/90">
+											{m.abbr}
+										</span>
+									</div>
+									<div>
+										<p className="font-Recursive text-sm font-medium leading-none">
+											{m.name}
+										</p>
+										<p className="mt-1 font-Mono text-[9px] uppercase tracking-widest text-muted-foreground">
+											{m.brand}
+										</p>
+									</div>
+									{m.selected && (
+										<Check className="ml-1 size-3 shrink-0 text-primary" />
+									)}
+								</div>
+							))}
+						</div>
+					</div>
+
+					<Separator />
+
+					{/* ── REDESIGNED FORM CONTROLS ── */}
+					<div className="space-y-3">
+						<SectionLabel>
+							Form Controls — redesigned to match the design system
+						</SectionLabel>
+						<div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+							<SubSection label="Option Chips (redesigned)">
+								<div className="space-y-4">
+									<div className="space-y-1.5">
+										<p className="font-Mono text-[10px] uppercase tracking-[0.12em] text-primary-800/70 dark:text-primary-200 underline decoration-dotted decoration-2">
+											Overall Rating
+										</p>
+										<div className="flex flex-wrap gap-1.5">
+											{["Excellent", "Good", "Mid", "Horrible"].map((opt) => (
+												<button
+													key={opt}
+													type="button"
+													className={`border px-3 py-1.5 font-Recursive text-sm transition-all ${
+														opt === "Excellent"
+															? "border-primary bg-primary text-primary-foreground"
+															: "border-border bg-background text-muted-foreground hover:border-primary/40 hover:text-foreground"
+													}`}
+												>
+													{opt}
+												</button>
+											))}
+										</div>
+									</div>
+									<div className="space-y-1.5">
+										<p className="font-Mono text-[10px] uppercase tracking-[0.12em] text-primary-800/70 dark:text-primary-200 underline decoration-dotted decoration-2">
+											Dominant Note
+										</p>
+										<div className="flex flex-wrap gap-1.5">
+											{[
+												{ label: "Fruity", color: "bg-tag-teal-900" },
+												{ label: "Floral", color: "bg-tag-blue-900" },
+												{ label: "Nutty", color: "bg-tag-red-900" },
+												{ label: "Roasted", color: "bg-tag-yellow-900" },
+												{ label: "Spices", color: "bg-tag-purple-900" },
+												{ label: "Green", color: "bg-tag-green-900" },
+											].map(({ label, color }) => (
+												<button
+													key={label}
+													type="button"
+													className={`flex items-center gap-1.5 border px-3 py-1.5 font-Recursive text-sm transition-all ${
+														label === "Floral"
+															? "border-primary bg-primary/5 text-foreground"
+															: "border-border bg-background text-muted-foreground hover:border-primary/40 hover:text-foreground"
+													}`}
+												>
+													<span
+														className={`size-2 shrink-0 rounded-full ${color}`}
+													/>
+													{label}
+												</button>
+											))}
+										</div>
+									</div>
+								</div>
+							</SubSection>
+
+							<SubSection label="Roast Level Picker (redesigned)">
+								<div className="space-y-1.5">
+									<p className="font-Mono text-[10px] uppercase tracking-[0.12em] text-primary-800/70 dark:text-primary-200 underline decoration-dotted decoration-2">
+										Roast Level
+									</p>
+									<div className="flex gap-1">
+										{Array.from({ length: 10 }, (_, i) => i + 1).map((lvl) => (
+											<button
+												key={lvl}
+												type="button"
+												className={`flex-1 py-2.5 font-Mono text-xs font-semibold transition-all border-b-2 ${
+													lvl === 4
+														? "border-primary text-primary-800 dark:text-primary-200 bg-primary/10"
+														: "border-transparent text-muted-foreground hover:text-foreground hover:border-primary/30"
+												}`}
+											>
+												{lvl}
+											</button>
+										))}
+									</div>
+									<div
+										className="h-1 w-full"
+										style={{
+											background:
+												"linear-gradient(to right, oklch(0.916 0.033 221), oklch(0.949 0.032 76), oklch(0.857 0.05 54), oklch(0.425 0.137 25))",
+										}}
+									/>
+									<div className="flex justify-between">
+										<span className="font-Mono text-[9px] text-muted-foreground uppercase">
+											Light
+										</span>
+										<span className="font-Mono text-[9px] text-muted-foreground uppercase">
+											Dark
+										</span>
+									</div>
+								</div>
+							</SubSection>
+						</div>
+					</div>
+
+					<Separator />
+
+					{/* ── MULTI-TAG INPUT ── */}
+					<div className="space-y-3">
+						<SectionLabel>Multi-tag Input (redesigned)</SectionLabel>
+						<div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+							<SubSection label="Tasting Notes">
+								<div className="space-y-2">
+									<div className="flex flex-wrap gap-1.5">
+										{["Citrus", "Dark chocolate", "Bergamot"].map((tag) => (
+											<span
+												key={tag}
+												className="flex items-center gap-1.5 border border-primary/30 bg-primary/5 px-2.5 py-1 font-Recursive text-xs font-medium text-primary-800 dark:text-primary-200"
+											>
+												{tag}
+												<button
+													type="button"
+													className="opacity-50 hover:opacity-100 leading-none text-sm"
+												>
+													×
+												</button>
+											</span>
+										))}
+									</div>
+									<div className="flex flex-wrap gap-1.5">
+										{["Caramel", "Vanilla", "Hazelnut", "Floral"].map((tag) => (
+											<button
+												key={tag}
+												type="button"
+												className="border border-border bg-background px-2.5 py-1 font-Recursive text-xs text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground"
+											>
+												+ {tag}
+											</button>
+										))}
+									</div>
+									<div className="flex gap-2">
+										<input
+											readOnly
+											placeholder="Type your own note…"
+											className="flex-1 border border-border bg-background px-3 py-1.5 font-Recursive text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/40 rounded-none"
+										/>
+										<button
+											type="button"
+											className="border border-border bg-background px-3 font-Mono text-xs uppercase tracking-widest text-muted-foreground hover:text-foreground"
+										>
+											Add
+										</button>
+									</div>
+								</div>
+							</SubSection>
+
+							<SubSection label="Taste Profiles">
+								<div className="space-y-2">
+									<div className="flex flex-wrap gap-1.5">
+										{[
+											"Balanced",
+											"Complex",
+											"Clean",
+											"Bright",
+											"Smooth",
+											"Intense",
+										].map((tag) => (
+											<button
+												key={tag}
+												type="button"
+												className={`border px-2.5 py-1 font-Recursive text-xs transition-colors ${
+													["Balanced", "Bright"].includes(tag)
+														? "border-primary/40 bg-primary/5 text-primary-800 dark:text-primary-200"
+														: "border-border bg-background text-muted-foreground hover:border-primary/40 hover:text-foreground"
+												}`}
+											>
+												{["Balanced", "Bright"].includes(tag) ? "✓ " : ""}
+												{tag}
+											</button>
+										))}
+									</div>
+									<input
+										readOnly
+										placeholder="Custom profile…"
+										className="w-full border border-border bg-background px-3 py-1.5 font-Recursive text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/40 rounded-none"
+									/>
+								</div>
+							</SubSection>
+						</div>
+					</div>
+
+					<Separator />
+
+					{/* ── FULL FORM LAYOUT CONCEPT ── */}
+					<div className="space-y-3">
+						<SectionLabel>
+							Full Form Layout — how a log page section should look
+						</SectionLabel>
+						<div className="border border-border bg-background-light/60 p-5 space-y-5 max-w-2xl">
+							<div className="pb-4 border-b border-border">
+								<p className="font-Mono text-[10px] uppercase tracking-[0.18em] text-primary-800/60 dark:text-primary-200/60">
+									Log
+								</p>
+								<h1 className="font-News text-4xl text-primary-800 dark:text-primary-100 mt-0.5 leading-none">
+									A Brew
+								</h1>
+								<p className="font-Recursive text-sm text-muted-foreground mt-2">
+									How was that cup?
+								</p>
+							</div>
+							<div className="space-y-3">
+								<div>
+									<p className="font-News text-xl italic text-primary-800 dark:text-primary-100">
+										Bean
+									</p>
+									<div className="squiggly-line mt-1 opacity-20 scale-y-75" />
+								</div>
+								<div className="grid grid-cols-2 gap-1.5 sm:grid-cols-3">
+									{[
+										{
+											name: "Ethiopia Yirgacheffe",
+											origin: ["Ethiopia", "France"],
+											dominantNote: "Fruity",
+											selected: false,
+										},
+										{
+											name: "Colombia Huila",
+											origin: ["Colombia"],
+											dominantNote: "Sour",
+											selected: true,
+										},
+										{
+											name: "Kenya AA",
+											origin: ["Kenya"],
+											dominantNote: "Sweet",
+											selected: false,
+										},
+									].map((bean) => (
+										<QuickCard
+											key={bean.name}
+											bean={bean as BeanCardProps}
+											onClick={() => console.log(bean.name)}
+										/>
+									))}
+								</div>
+							</div>
+							<div className="space-y-3">
+								<div>
+									<p className="font-News text-xl italic text-primary-800 dark:text-primary-100">
+										The Brew
+									</p>
+									<div className="squiggly-line mt-1 opacity-20 scale-y-75" />
+								</div>
+								<div className="space-y-1">
+									<p className="font-Mono text-[10px] uppercase tracking-[0.12em] text-primary-800/70 dark:text-primary-200 underline decoration-dotted decoration-2">
+										Overall Rating
+									</p>
+									<div className="flex flex-wrap gap-1.5">
+										{["Excellent", "Good", "Mid", "Horrible"].map((opt) => (
+											<button
+												key={opt}
+												type="button"
+												className={`border px-3 py-1.5 font-Recursive text-sm transition-all ${
+													opt === "Good"
+														? "border-primary bg-primary text-primary-foreground"
+														: "border-border bg-background text-muted-foreground hover:border-primary/40"
+												}`}
+											>
+												{opt}
+											</button>
+										))}
+									</div>
+								</div>
+							</div>
+							<div className="border-t border-border pt-4">
+								<button
+									type="button"
+									className="w-full border border-primary bg-primary py-3 font-News text-lg italic text-primary-foreground transition-opacity hover:opacity-90"
+								>
+									Save Brew
+								</button>
+							</div>
+						</div>
+					</div>
+
+					<Separator />
+
+					{/* ── LOG PAGE HEADERS ── */}
+					<div className="space-y-3">
+						<SectionLabel>Log Page Headers — variants</SectionLabel>
+						<div className="grid grid-cols-1 gap-4 md:grid-cols-4">
+							{[
+								{
+									eyebrow: "Log",
+									title: "A Brew",
+									sub: "How was that cup?",
+									icon: <Coffee className="size-6" />,
+								},
+								{
+									eyebrow: "Add",
+									title: "A Bean",
+									sub: "Catalog a new coffee bean",
+									icon: <Flower className="size-6" />,
+								},
+								{
+									eyebrow: "What",
+									title: "the fuck",
+									sub: "AM I DOING IT right?",
+									icon: <ForkKnife className="size-6" />,
+								},
+								{
+									eyebrow: "Add",
+									title: "Equipment",
+									sub: "Register a machine or brewer",
+									icon: <Cpu className="size-6" />,
+								},
+							].map(({ eyebrow, title, sub, icon }) => (
+								<div key={title}>
+									<Header
+										eyebrow={eyebrow}
+										title={title}
+										sub={sub}
+										icon={icon}
+									/>
+								</div>
+							))}
 						</div>
 					</div>
 				</div>

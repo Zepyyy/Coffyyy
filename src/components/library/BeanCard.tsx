@@ -12,61 +12,9 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { deleteBean } from "@/db/crud/delete";
-import { cn } from "@/lib/utils";
+import { colorSwatch } from "@/lib/utils";
 import type { Beans } from "@/types/default";
 import { Separator } from "../ui/separator";
-
-const colorSwatch: Partial<
-	Record<
-		Beans["dominantNote"],
-		{
-			bgColor: string;
-			textColor: string;
-			secondaryTextColor: string;
-		}
-	>
-> = {
-	Fruity: {
-		bgColor: "bg-tag-teal-900",
-		textColor: "text-tag-teal-100",
-		secondaryTextColor: "text-tag-teal-100/75",
-	},
-	Nutty: {
-		bgColor: "bg-tag-red-900",
-		textColor: "text-tag-red-100",
-		secondaryTextColor: "text-tag-red-100/75",
-	},
-	Floral: {
-		bgColor: "bg-tag-blue-900",
-		textColor: "text-tag-blue-100",
-		secondaryTextColor: "text-tag-blue-100/75",
-	},
-	Green: {
-		bgColor: "bg-tag-green-900",
-		textColor: "text-tag-green-100",
-		secondaryTextColor: "text-tag-green-100/75",
-	},
-	Roasted: {
-		bgColor: "bg-tag-yellow-900",
-		textColor: "text-tag-yellow-100",
-		secondaryTextColor: "text-tag-yellow-100/75",
-	},
-	Sour: {
-		bgColor: "bg-tag-orange-900",
-		textColor: "text-tag-orange-100",
-		secondaryTextColor: "text-tag-orange-100/75",
-	},
-	Spices: {
-		bgColor: "bg-tag-purple-900",
-		textColor: "text-tag-purple-100",
-		secondaryTextColor: "text-tag-purple-100/75",
-	},
-	Sweet: {
-		bgColor: "bg-tag-yellow-900",
-		textColor: "text-tag-yellow-100",
-		secondaryTextColor: "text-tag-yellow-100/75",
-	},
-};
 
 const noteBadge: Partial<
 	Record<
@@ -120,60 +68,42 @@ export default function BeanCard({ bean }: { bean: Beans }) {
 	const [confirmDelete, setConfirmDelete] = useState(false);
 	const NoteIcon = noteBadge[bean.dominantNote]?.icon ?? FileQuestion;
 	const tastingNotes = bean.tastingNotes.join(", ");
-	const origin = bean.origin.join(", ");
 
 	const parameters: Parameter[] = [
-		{ label: "Origin", values: bean.origin },
 		{ label: "Variety", values: bean.variety },
+		{ label: "Note", singleValue: bean.dominantNote },
 		{ label: "Process", singleValue: bean.process },
 	];
 
 	return (
 		<div className="relative z-20 flex h-full w-full flex-col overflow-hidden border border-primary/15 bg-background">
 			{/* Header row */}
-			<div
-				className={cn(
-					"p-6 relative w-full",
-					colorSwatch[bean.dominantNote]?.bgColor,
-				)}
+			<article
+				className={`p-6 relative w-full ${colorSwatch[bean.dominantNote]?.bgColor}`}
 			>
+				<div
+					className={`text-3xl font-Lora font-semibold leading-none tracking-wide ${colorSwatch[bean.dominantNote]?.textColor}`}
+				>
+					{bean.name || "Unnamed bean"}
+				</div>
+
+				<div
+					className={`text-sm font-Mono uppercase tracking-[0.12em] font-medium dark:text-tag-primary-200 ${colorSwatch[bean.dominantNote]?.secondaryTextColor}`}
+				>
+					{bean.origin.join(", ")}
+				</div>
+				{/* Background text effect */}
+				<div
+					className={`text-8xl font-Lora font-semibold absolute top-1/2 -translate-y-1/2 left-0 opacity-5 select-none text-nowrap ${colorSwatch[bean.dominantNote]?.textColor}`}
+				>
+					{bean.name || "Unnamed bean"}
+				</div>
 				{/* Top left icon */}
 				<NoteIcon
 					strokeWidth={2}
-					className={cn(
-						"size-6 absolute top-5 right-5",
-						colorSwatch[bean.dominantNote]?.textColor,
-					)}
+					className={`size-6 absolute top-5 right-5 ${colorSwatch[bean.dominantNote]?.textColor}`}
 				/>
-				<article className="">
-					<div
-						className={cn(
-							"text-3xl font-Lora font-semibold leading-none tracking-wide",
-							colorSwatch[bean.dominantNote]?.textColor,
-						)}
-					>
-						{bean.name || "Unnamed bean"}
-					</div>
-
-					<div
-						className={cn(
-							"text-sm font-Mono uppercase tracking-[0.12em] font-medium dark:text-tag-primary-200",
-							colorSwatch[bean.dominantNote]?.secondaryTextColor,
-						)}
-					>
-						{origin} / {/*{bean.country && bean.country} */} El Paraiso
-					</div>
-					{/* Background text effect */}
-					<div
-						className={cn(
-							"text-8xl font-Lora font-semibold absolute top-1/2 -translate-y-1/2 left-0 opacity-5 select-none text-nowrap",
-							colorSwatch[bean.dominantNote]?.textColor,
-						)}
-					>
-						{bean.name || "Unnamed bean"}
-					</div>
-				</article>
-			</div>
+			</article>
 
 			<Separator />
 			<div className="flex flex-1 flex-col p-6">
@@ -192,7 +122,7 @@ export default function BeanCard({ bean }: { bean: Beans }) {
 				<div className="squiggly-line mt-6 w-full scale-x-125 scale-y-75 opacity-20" />
 				<article className="mt-6 text-wrap">
 					<div className="text-sm font-light dark:text-primary-200 text-primary-800/70 tracking-tighter font-Mono underline decoration-2 decoration-dotted mb-1">
-						Notes
+						Flavors
 					</div>
 					<span
 						className="block text-sm font-medium font-Recursive text-foreground overflow-hidden"

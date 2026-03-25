@@ -28,6 +28,13 @@ export type Beans = {
 	flavors: string[];
 	finished: boolean;
 };
+export type BeanCardProps = {
+	name: string;
+	origin: string[];
+	dominantNote: Beans["dominantNote"];
+	selected: boolean;
+};
+
 export type Brews = {
 	id: number;
 	bean: string | undefined;

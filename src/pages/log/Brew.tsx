@@ -1,9 +1,11 @@
 import { useLiveQuery } from "dexie-react-hooks";
 import { type ChangeEvent, useMemo, useState } from "react";
+import QuickCard from "@/components/QuickCard";
 import { addBrew } from "@/db/crud/add";
 import { db } from "@/db/db";
 import { buildBrewSuggestions } from "@/lib/brewSuggestions";
 import { cn } from "@/lib/utils";
+import type { BeanCardProps } from "@/types/default";
 
 export type BrewForm = {
 	bean: string | undefined;
@@ -203,7 +205,15 @@ export default function Brew() {
 		() =>
 			buildBrewSuggestions(
 				brews ?? [],
-				beanRecords.map((b) => b.name ?? ""),
+				beanRecords.map(
+					(b) =>
+						({
+							name: b.name ?? "",
+							origin: b.origin ?? [],
+							dominantNote: b.dominantNote ?? "",
+							selected: false,
+						}) as BeanCardProps,
+				),
 				machineRecords.map((m) => m.name ?? ""),
 			),
 		[brews, beanRecords, machineRecords],
@@ -298,7 +308,7 @@ export default function Brew() {
 	}
 
 	return (
-		<div className="mx-auto max-w-2xl">
+		<div className="mx-auto max-w-4xl">
 			<div className="mb-8">
 				<h1 className="text-3xl font-bold tracking-tight">Log a Brew</h1>
 				<p className="mt-1 text-sm text-muted-foreground">How was that cup?</p>
@@ -311,11 +321,25 @@ export default function Brew() {
 					<div className="space-y-2">
 						<div className="space-y-1.5">
 							<FieldLabel required>The bean</FieldLabel>
-							<OptionChips
+							<div className="grid grid-cols-2 gap-1.5 sm:grid-cols-3">
+								{suggestions.bean.map((beanInfo) => (
+									<QuickCard
+										key={beanInfo.name}
+										bean={{
+											name: beanInfo.name,
+											origin: beanInfo.origin,
+											dominantNote: beanInfo.dominantNote,
+											selected: beanInfo.name === form.bean,
+										}}
+										onClick={() => setField("bean", beanInfo.name)}
+									/>
+								))}
+							</div>
+							{/*<OptionChips
 								options={suggestions.bean.map((b) => b)}
 								value={form.bean}
 								onChange={(v) => setField("bean", v)}
-							/>
+							/>*/}
 						</div>
 					</div>
 				</section>

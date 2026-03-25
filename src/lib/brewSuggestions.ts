@@ -1,7 +1,7 @@
-import type { Brews } from "@/types/default";
+import type { BeanCardProps, Brews } from "@/types/default";
 
 export type BrewSuggestions = {
-	bean: Array<string>;
+	bean: Array<BeanCardProps>;
 	grindSize: Array<string>;
 	overallRating: Array<string>;
 	adjustementNeeded: Array<string>;
@@ -39,10 +39,10 @@ function rankByUsage(values: Array<string>): Array<string> {
 
 export function buildBrewSuggestions(
 	brews: Array<Brews>,
-	beanNames: string[],
+	beanCardInfo: Array<BeanCardProps>,
 	machineNames: string[],
 ): BrewSuggestions {
-	const bean: string[] = beanNames;
+	const bean: Array<BeanCardProps> = beanCardInfo;
 	const grindSize: Array<string> = [];
 	const overallRating: Array<string> = [
 		"Excellent",
