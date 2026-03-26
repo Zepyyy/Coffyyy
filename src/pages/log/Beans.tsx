@@ -287,8 +287,8 @@ export default function BeansLog() {
 						</div>
 						<div className="bg-background p-2 border border-primary/20">
 							<p className="text-sm text-foreground py-1">Status: {status}</p>
-							{Object.entries(form).map(([key, value], index) => (
-								<div key={index}>
+							{Object.entries(form).map(([key, value]) => (
+								<div key={key}>
 									<p className="text-sm text-muted-foreground space-x-4">
 										<span>{key}: </span>
 										<span className="font-mono text-foreground">
@@ -467,19 +467,21 @@ export default function BeansLog() {
 
 							<div className="space-y-1.5">
 								<FieldLabel>Dominant note</FieldLabel>
-								{suggestions.dominantNotes.map((note) => (
-									<button
-										key={note}
-										type="button"
-										onClick={() => setField("dominantNote", note)}
-										className={`flex items-center gap-1.5 border px-3 py-1.5 font-Recursive text-sm transition-all ${form.dominantNote === note ? "border-primary bg-primary/5 text-foreground" : "border-border bg-background text-muted-foreground hover:border-primary/40 hover:text-foreground"}`}
-									>
-										<span
-											className={`w-2 h-2 rounded-full ${colorSwatch[note]?.bgColor}`}
-										/>
-										{note}
-									</button>
-								))}
+								<div className="flex flex-wrap gap-1.5 mb-1.5">
+									{suggestions.dominantNotes.map((note) => (
+										<button
+											key={note}
+											type="button"
+											onClick={() => setField("dominantNote", note)}
+											className={`flex items-center gap-1.5 border px-3 py-1.5 font-Recursive text-sm transition-all ${form.dominantNote === note ? "border-primary bg-primary/5 text-foreground" : "border-border bg-background text-muted-foreground hover:border-primary/40 hover:text-foreground"}`}
+										>
+											<span
+												className={`w-2 h-2 rounded-full ${colorSwatch[note]?.secondaryBgColor}`}
+											/>
+											{note}
+										</button>
+									))}
+								</div>
 							</div>
 
 							<div className="space-y-1.5">

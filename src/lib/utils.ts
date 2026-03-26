@@ -19,13 +19,13 @@ export const colorSwatch: Partial<
 > = {
 	Fruity: {
 		bgColor: "bg-tag-teal-900",
-		secondaryBgColor: "bg-tag-teal-900",
+		secondaryBgColor: "bg-tag-teal-900 dark:bg-tag-teal-100",
 		textColor: "text-tag-teal-100",
 		secondaryTextColor: "text-tag-teal-100/75",
 	},
 	Nutty: {
 		bgColor: "bg-tag-red-900",
-		secondaryBgColor: "bg-tag-red-900",
+		secondaryBgColor: "bg-tag-red-900 dark:bg-tag-red-100",
 		textColor: "text-tag-red-100",
 		secondaryTextColor: "text-tag-red-100/75",
 	},
@@ -55,13 +55,13 @@ export const colorSwatch: Partial<
 	},
 	Spices: {
 		bgColor: "bg-tag-purple-900",
-		secondaryBgColor: "bg-tag-purple-100",
+		secondaryBgColor: "bg-tag-purple-900 dark:bg-tag-purple-100",
 		textColor: "text-tag-purple-100",
 		secondaryTextColor: "text-tag-purple-100/75",
 	},
 	Sweet: {
 		bgColor: "bg-tag-yellow-900",
-		secondaryBgColor: "bg-tag-yellow-100",
+		secondaryBgColor: "bg-tag-yellow-900 dark:bg-tag-yellow-100",
 		textColor: "text-tag-yellow-100",
 		secondaryTextColor: "text-tag-yellow-100/75",
 	},
