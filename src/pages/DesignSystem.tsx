@@ -22,7 +22,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Toggle } from "@/components/ui/toggle";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import type { BeanCardProps } from "@/types/default";
+import type { BeanCardProps } from "@/types/BeanTypes";
 
 type SwatchToken = {
 	name: string;
@@ -576,7 +576,7 @@ export default function DesignSystem() {
 								name: "Bean Card",
 								origin: ["Origin"],
 								rating: 4,
-								process: "default",
+								process: ["default"],
 								status: "Excellent",
 								tastingNotes: ["default", "default", "default"],
 								variety: ["Variety"],

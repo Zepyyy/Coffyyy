@@ -1,6 +1,6 @@
 import { Check } from "lucide-react";
 import { colorSwatch } from "@/lib/utils";
-import type { BeanCardProps } from "@/types/default";
+import type { BeanCardProps } from "@/types/BeanTypes";
 
 export default function QuickCard({
 	bean,

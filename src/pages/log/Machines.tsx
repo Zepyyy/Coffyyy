@@ -98,7 +98,7 @@ function normalizeOptional(value: string) {
 	return trimmed.length > 0 ? trimmed : undefined;
 }
 
-export default function Machines() {
+export default function MachinesLog() {
 	const [form, setForm] = useState<MachineForm>(INITIAL);
 	const [status, setStatus] = useState("");
 	const [isSaving, setIsSaving] = useState(false);

@@ -1,5 +1,6 @@
-import type { Beans, Brews } from "@/types/default";
+import type { Brews } from "@/types/default";
 import { db } from "../db";
+import type { Beans } from "@/types/BeanTypes";
 
 async function updateBeanByName(bean: Partial<Beans>, name: string) {
 	try {

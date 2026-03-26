@@ -13,7 +13,7 @@ import {
 import { useState } from "react";
 import { deleteBean } from "@/db/crud/delete";
 import { colorSwatch } from "@/lib/utils";
-import type { Beans } from "@/types/default";
+import type { Beans } from "@/types/BeanTypes";
 import { Separator } from "../ui/separator";
 
 const noteBadge: Partial<
@@ -72,7 +72,7 @@ export default function BeanCard({ bean }: { bean: Beans }) {
 	const parameters: Parameter[] = [
 		{ label: "Variety", values: bean.variety },
 		{ label: "Note", singleValue: bean.dominantNote },
-		{ label: "Process", singleValue: bean.process },
+		{ label: "Process", values: bean.process },
 	];
 
 	return (

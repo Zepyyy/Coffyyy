@@ -5,7 +5,7 @@ import { addBrew } from "@/db/crud/add";
 import { db } from "@/db/db";
 import { buildBrewSuggestions } from "@/lib/brewSuggestions";
 import { cn } from "@/lib/utils";
-import type { BeanCardProps } from "@/types/default";
+import type { BeanCardProps } from "@/types/BeanTypes";
 
 export type BrewForm = {
 	bean: string | undefined;
@@ -191,7 +191,7 @@ function MultiChips({
 	);
 }
 
-export default function Brew() {
+export default function BrewLog() {
 	const [form, setForm] = useState<BrewForm>(INITIAL);
 	const [customProfile, setCustomProfile] = useState("");
 	const [status, setStatus] = useState("");

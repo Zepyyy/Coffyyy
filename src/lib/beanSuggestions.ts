@@ -1,4 +1,4 @@
-import type { Beans } from "@/types/default";
+import type { Beans } from "@/types/BeanTypes";
 
 export type BeanSuggestions = {
 	names: Array<string>;
@@ -8,7 +8,7 @@ export type BeanSuggestions = {
 	brands: Array<string>;
 	origins: Array<string>;
 	varieties: Array<string>;
-	dominantNotes: Array<string>;
+	dominantNotes: Array<Beans["dominantNote"]>;
 	flavors: Array<string>;
 	tastingNotes: Array<string>;
 };
@@ -38,32 +38,29 @@ function rankByUsage(values: Array<string>): Array<string> {
 
 export function buildBeanSuggestions(beans: Array<Beans>): BeanSuggestions {
 	const names: Array<string> = [];
-	const processes: Array<string> = ["Washed", "Natural", "Honey", "?"];
+	const processes: Array<string> = [];
 	const botanics: Array<string> = ["Arabica", "Robusta", "?"];
 	const designations: Array<string> = ["Pure Origin", "Blend", "?"];
 	const brands: Array<string> = [];
 	const origins: Array<string> = [];
 	const varieties: Array<string> = [];
-	const dominantNotes: Array<string> = [
-		"Fruity",
-		"Nutty",
+	const dominantNotes: Array<Beans["dominantNote"]> = [
 		"Floral",
-		"Sweet",
+		"Fruity",
+		"Green",
+		"Nutty",
+		"Roasted",
 		"Sour",
 		"Spices",
-		"Roasted",
-		"Green",
+		"Sweet",
 	];
 	const flavors: Array<string> = [];
 	const tastingNotes: Array<string> = [];
 
 	for (const bean of beans) {
 		if (bean.name) names.push(bean.name);
-		if (bean.process) processes.push(bean.process);
-		if (bean.botanic) botanics.push(bean.botanic);
-		if (bean.designation) designations.push(bean.designation);
-		if (bean.brand) brands.push(bean.brand);
-		if (bean.dominantNote) dominantNotes.push(bean.dominantNote);
+        if (bean.brand) brands.push(bean.brand);
+		processes.push(...(bean.process ?? []));
 		origins.push(...(bean.origin ?? []));
 		varieties.push(...(bean.variety ?? []));
 		flavors.push(...(bean.flavors ?? []));
@@ -73,12 +70,12 @@ export function buildBeanSuggestions(beans: Array<Beans>): BeanSuggestions {
 	return {
 		names: rankByUsage(names),
 		processes: rankByUsage(processes),
-		botanics: rankByUsage(botanics),
-		designations: rankByUsage(designations),
+		botanics,
+		designations,
 		brands: rankByUsage(brands),
 		origins: rankByUsage(origins),
 		varieties: rankByUsage(varieties),
-		dominantNotes: rankByUsage(dominantNotes),
+		dominantNotes,
 		flavors: rankByUsage(flavors),
 		tastingNotes: rankByUsage(tastingNotes),
 	};

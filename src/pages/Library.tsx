@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { addRandomBean, addRandomMachine } from "@/db/crud/add";
 import { db } from "@/db/db";
 import { cn } from "@/lib/utils";
+import type { Beans } from "@/types/BeanTypes";
 
 type Tab = "beans" | "machines";
 
@@ -46,10 +47,11 @@ export default function Library() {
 
 	const processCounts = useMemo(() => {
 		const counts = new Map<string, number>();
-		for (const bean of sortedBeans) {
-			const process = bean.process?.trim();
-			if (!process || process === "?") continue;
-			counts.set(process, (counts.get(process) ?? 0) + 1);
+		for (const bean of sortedBeans as Beans[]) {
+			for (const process of bean.process ?? []) {
+				if (!process || process === "?") continue;
+				counts.set(process, (counts.get(process) ?? 0) + 1);
+			}
 		}
 		return [...counts.entries()].sort((a, b) => b[1] - a[1]);
 	}, [sortedBeans]);
@@ -87,7 +89,7 @@ export default function Library() {
 
 	const filteredBeans = useMemo(() => {
 		const q = search.trim().toLowerCase();
-		return sortedBeans.filter((b) => {
+		return sortedBeans.filter((b: Beans) => {
 			const matchesSearch =
 				!q ||
 				[
@@ -104,14 +106,16 @@ export default function Library() {
 					.join(" ")
 					.toLowerCase()
 					.includes(q);
-			const matchesCountry =
-				selectedCountries.length === 0 ||
-				(b.origin ?? []).some((country) =>
-					selectedCountries.includes(country.trim()),
+            const matchesCountry =
+                selectedCountries.length === 0 ||
+				(b.origin ?? []).some((origin) =>
+                selectedCountries.includes(origin.trim()),
 				);
 			const matchesProcess =
 				selectedProcesses.length === 0 ||
-				selectedProcesses.includes(b.process?.trim());
+				(b.process ?? []).some((process) =>
+					selectedProcesses.includes(process.trim()),
+				);
 			return matchesSearch && matchesCountry && matchesProcess;
 		});
 	}, [search, selectedCountries, selectedProcesses, sortedBeans]);

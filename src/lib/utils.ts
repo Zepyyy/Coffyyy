@@ -1,6 +1,6 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-import type { Beans } from "@/types/default";
+import type { Beans } from "@/types/BeanTypes";
 
 export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));

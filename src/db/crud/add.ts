@@ -1,5 +1,6 @@
-import type { Beans, Brews, Machines } from "@/types/default";
+import type { Brews, Machines } from "@/types/default";
 import { db } from "../db";
+import type { Beans } from "@/types/BeanTypes";
 
 async function addBean(bean: Omit<Beans, "id">) {
 	try {
@@ -62,23 +63,23 @@ async function addRandomBean() {
 				]),
 				finished: false,
 				flavors: ["mango", "Banan", "Lime"],
-				origin: [SelectRandom(["Colombia", "France"])],
-				process: SelectRandom(["Honey", "Washed", "Semi-Processed"]),
+				origin: [SelectRandom(["Colombia", "France", "Venezuela", "Brazil", "Argentina"])],
+				process: [SelectRandom(["Natural", "Honey", "Washed", "Semi-Processed"])],
 				rating: SelectRandom([1, 2, 3, 4, 5]),
 				roastLevel: SelectRandom([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
 				status: SelectRandom(["Excellent", "Good", "Fair", "Poor"]),
 				tastingNotes: SelectMultiple(
 					[
-						"mango",
+						"Mango",
 						"Banan",
 						"Lime",
 						"Apple",
 						"Orange",
-						"qsd",
-						"JustRandomStuff",
-						"ALongAssFlavorRightThere",
-						"I",
-						"smol",
+						"Nut",
+						"Chocolate",
+						"Almonds",
+						"Cherry",
+						"Berries",
 					],
 					4,
 				),

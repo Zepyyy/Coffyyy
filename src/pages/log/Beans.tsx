@@ -1,15 +1,16 @@
 import { useLiveQuery } from "dexie-react-hooks";
 import { type ChangeEvent, useMemo, useState } from "react";
+import { Separator } from "@/components/ui/separator";
 import { addBean } from "@/db/crud/add";
 import { db } from "@/db/db";
 import { buildBeanSuggestions } from "@/lib/beanSuggestions";
-import { cn } from "@/lib/utils";
+import { cn, colorSwatch } from "@/lib/utils";
 
 type BeanForm = {
 	name: string;
 	brand: string;
 	roastLevel: string;
-	process: string;
+	process: string[];
 	botanic: string;
 	designation: string;
 	origin: string[];
@@ -23,7 +24,7 @@ const INITIAL: BeanForm = {
 	name: "",
 	brand: "",
 	roastLevel: "",
-	process: "",
+	process: [],
 	botanic: "",
 	designation: "",
 	origin: [],
@@ -47,8 +48,9 @@ const ROAST_LEVELS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
 	return (
-		<p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+		<p className="text-sm font-semibold font-Mono uppercase tracking-widest text-muted-foreground mb-4">
 			{children}
+			<Separator className="w-auto bg-primary " />
 		</p>
 	);
 }
@@ -61,7 +63,10 @@ function FieldLabel({
 	required?: boolean;
 }) {
 	return (
-		<label className="text-sm font-medium" htmlFor={children as string}>
+		<label
+			className="font-Lora text-lg font-medium"
+			htmlFor={children as string}
+		>
 			{children}
 			{required && (
 				<span className="ml-1 text-xs text-muted-foreground font-normal">
@@ -89,10 +94,10 @@ function OptionChips({
 					type="button"
 					onClick={() => onChange(value === opt ? "" : opt)}
 					className={cn(
-						"px-3 py-1.5 rounded-lg text-sm font-medium transition-colors",
+						"border px-3 py-1.5 font-Recursive text-sm transition-all",
 						value === opt
-							? "bg-foreground text-background"
-							: "bg-muted text-muted-foreground hover:bg-muted/70 hover:text-foreground",
+							? "border-primary bg-primary text-primary-foreground"
+							: "border-border bg-background text-muted-foreground hover:border-primary/40 hover:text-foreground",
 					)}
 				>
 					{opt}
@@ -119,30 +124,36 @@ function MultiChips({
 	onCustomAdd: () => void;
 	placeholder: string;
 }) {
+	const allChips = [
+		...suggestions,
+		...selected.filter((s) => !suggestions.includes(s)),
+	];
+
 	return (
 		<div className="space-y-2">
-			{suggestions.length > 0 && (
+			{allChips.length > 0 && (
 				<div className="flex flex-wrap gap-1.5">
-					{suggestions.map((s) => (
+					{allChips.map((s) => (
 						<button
 							key={s}
 							type="button"
 							onClick={() => onToggle(s)}
 							className={cn(
-								"px-3 py-1.5 rounded-lg text-sm font-medium transition-colors",
+								"flex items-center gap-1.5 px-2.5 py-1 font-Recursive text-xs border font-medium transition-colors",
 								selected.includes(s)
-									? "bg-foreground text-background"
-									: "bg-muted text-muted-foreground hover:bg-muted/70 hover:text-foreground",
+									? "border-primary/30 bg-primary/5 text-primary-800 dark:text-primary-200"
+									: "border-border bg-background text-muted-foreground hover:border-primary/40 hover:text-foreground",
 							)}
 						>
-							{s} *
+							{s}
+							{selected.includes(s) ? <span>×</span> : <span>+</span>}
 						</button>
 					))}
 				</div>
 			)}
 			<div className="flex gap-2">
 				<input
-					className="h-10 flex-1 rounded-lg border border-border/70 bg-background px-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+					className="flex-1 border border-border bg-background px-3 py-1.5 font-Recursive text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/40 rounded-none"
 					placeholder={placeholder}
 					value={customInput}
 					onChange={(e) => onCustomChange(e.target.value)}
@@ -163,35 +174,18 @@ function MultiChips({
 					</button>
 				)}
 			</div>
-			{selected.length > 0 && (
-				<div className="flex flex-wrap gap-1.5">
-					{selected.map((s) => (
-						<span
-							key={s}
-							className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium"
-						>
-							{s}
-							<button
-								type="button"
-								onClick={() => onToggle(s)}
-								className="opacity-60 hover:opacity-100 leading-none"
-							>
-								×
-							</button>
-						</span>
-					))}
-				</div>
-			)}
 		</div>
 	);
 }
 
-export default function Beans() {
+export default function BeansLog() {
 	const [form, setForm] = useState<BeanForm>(INITIAL);
 	const [customOrigin, setCustomOrigin] = useState("");
 	const [customVariety, setCustomVariety] = useState("");
 	const [customFlavor, setCustomFlavor] = useState("");
 	const [customNote, setCustomNote] = useState("");
+	const [customProcess, setCustomProcess] = useState("");
+
 	const [status, setStatus] = useState("");
 	const [isSaving, setIsSaving] = useState(false);
 
@@ -203,7 +197,7 @@ export default function Beans() {
 	}
 
 	function toggleItem(
-		field: "origin" | "variety" | "flavors" | "tastingNotes",
+		field: "process" | "origin" | "variety" | "flavors" | "tastingNotes",
 		value: string,
 	) {
 		setForm((f) => {
@@ -218,7 +212,7 @@ export default function Beans() {
 	}
 
 	function addCustom(
-		field: "origin" | "variety" | "flavors" | "tastingNotes",
+		field: "process" | "origin" | "variety" | "flavors" | "tastingNotes",
 		value: string,
 		clearFn: () => void,
 	) {
@@ -242,11 +236,7 @@ export default function Beans() {
 				brand: form.brand,
 				rating: 0,
 				status: "New",
-				process: (form.process || "default") as
-					| "Washed"
-					| "Natural"
-					| "Honey"
-					| "default",
+				process: form.process,
 				botanic: (form.botanic || "default") as
 					| "Arabica"
 					| "Robusta"
@@ -283,202 +273,268 @@ export default function Beans() {
 	}
 
 	return (
-		<div className="mx-auto max-w-2xl">
-			<div className="mb-8">
-				<h1 className="text-3xl font-bold tracking-tight">Add a Bean</h1>
-				<p className="mt-1 text-sm text-muted-foreground">
-					Catalog a new coffee bean
-				</p>
-			</div>
-
-			<form onSubmit={handleSubmit} className="space-y-10">
-				{/* Identity */}
-				<section className="space-y-4">
-					<SectionTitle>Identity</SectionTitle>
-
-					<div className="space-y-1.5">
-						<FieldLabel required>Bean name</FieldLabel>
-						<input
-							className="h-12 w-full rounded-lg border border-border/70 bg-background px-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring"
-							placeholder="e.g. El Paraiso — Red Berries"
-							value={form.name}
-							onChange={(e) => setField("name", e.target.value)}
-							required
-						/>
+		<div className="mx-auto w-full max-w-4/5">
+			<div className="grid gap-6 lg:grid-cols-[24rem_minmax(0,1fr)] lg:gap-8">
+				<aside className="lg:sticky lg:top-20 lg:self-start max-w-fit lg:block hidden">
+					<div className="space-y-5 p-2 backdrop-blur-xs lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto">
+						<div className="border-l-5 border-primary-200 pl-5">
+							<h1 className="text-4xl font-News italic tracking-tight text-foreground/90">
+								Add a Bean
+							</h1>
+							<p className="mt-1 font-Recursive text-xs uppercase tracking-[0.2em] text-muted-foreground">
+								Catalog a new bean in your library.
+							</p>
+						</div>
+						<div className="bg-background p-2 border border-primary/20">
+							<p className="text-sm text-foreground py-1">
+								Status: {status}
+							</p>
+								{Object.entries(form).map(([key, value], index) => (
+									<div key={index}>
+										<p className="text-sm text-muted-foreground space-x-4">
+											<span>{key}: </span>
+											<span className="font-mono text-foreground">
+												{Array.isArray(value) ? value.join(", ") : value}
+											</span>
+										</p>
+									</div>
+								))}
+						</div>
 					</div>
+				</aside>
+				<section className="min-w-0 max-w-4/5">
+					<form onSubmit={handleSubmit} className="space-y-10">
+						{/* Identity */}
+						<section className="space-y-8">
+							<SectionTitle>Identity</SectionTitle>
 
-					<div className="space-y-1.5">
-						<FieldLabel>Brand / Roaster</FieldLabel>
-						{suggestions.brands.length > 0 && (
-							<div className="flex flex-wrap gap-1.5 mb-1.5">
-								{suggestions.brands.map((b) => (
+							<div className="space-y-1.5">
+								<FieldLabel required>Bean name</FieldLabel>
+								<input
+									className="h-12 w-full rounded-lg border border-border/70 bg-background px-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+									placeholder="e.g. El Paraiso — Red Berries"
+									value={form.name}
+									onChange={(e) => setField("name", e.target.value)}
+									required
+								/>
+							</div>
+
+							<div className="space-y-1.5">
+								<FieldLabel>Brand / Roaster</FieldLabel>
+								{suggestions.brands.length > 0 && (
+									<div className="flex flex-wrap gap-1.5 mb-1.5">
+										{suggestions.brands.map((b) => (
+											<button
+												key={b}
+												type="button"
+												onClick={() => setField("brand", b)}
+												className={cn(
+													"px-3 py-1.5 rounded-lg text-sm font-medium transition-colors",
+													form.brand === b
+														? "bg-foreground text-background"
+														: "bg-muted text-muted-foreground hover:bg-muted/70 hover:text-foreground",
+												)}
+											>
+												{b}
+											</button>
+										))}
+									</div>
+								)}
+								<input
+									className="h-11 w-full rounded-lg border border-border/70 bg-background px-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+									placeholder="e.g. Onyx Coffee Lab"
+									value={form.brand}
+									onChange={(e) => setField("brand", e.target.value)}
+								/>
+							</div>
+						</section>
+
+						{/* Origin & Processing */}
+						<section className="space-y-8">
+							<SectionTitle>Origin & Processing</SectionTitle>
+
+							<div className="space-y-1.5">
+								<FieldLabel>Origin</FieldLabel>
+								<MultiChips
+									suggestions={suggestions.origins}
+									selected={form.origin}
+									onToggle={(v) => toggleItem("origin", v)}
+									customInput={customOrigin}
+									onCustomChange={setCustomOrigin}
+									onCustomAdd={() =>
+										addCustom("origin", customOrigin, () => setCustomOrigin(""))
+									}
+									placeholder="Type a country or region…"
+								/>
+							</div>
+
+							<div className="space-y-1.5">
+								<FieldLabel>Roast level</FieldLabel>
+								<div className="flex flex-wrap gap-1.5">
+									{ROAST_LEVELS.map((lvl) => (
+										<button
+											key={lvl}
+											type="button"
+											onClick={() =>
+												setField(
+													"roastLevel",
+													form.roastLevel === lvl ? "" : lvl,
+												)
+											}
+											className={cn(
+												"flex-1 py-2.5 font-Mono text-xs font-semibold transition-all border-b-2",
+												form.roastLevel === lvl
+													? "border-primary text-primary-800 dark:text-primary-200 bg-primary/10"
+													: "border-transparent text-muted-foreground hover:text-foreground hover:border-primary/30",
+											)}
+										>
+											{lvl}
+										</button>
+									))}
+								</div>
+								<div
+									className="h-1 w-full"
+									style={{
+										background:
+											"linear-gradient(to right, oklch(0.916 0.033 221), oklch(0.949 0.032 76), oklch(0.857 0.05 54), oklch(0.425 0.137 25))",
+									}}
+								/>
+								<div className="flex justify-between">
+									<span className="font-Mono text-xs text-muted-foreground uppercase">
+										Light
+									</span>
+									<span className="font-Mono text-xs text-muted-foreground uppercase">
+										Dark
+									</span>
+								</div>
+							</div>
+
+							<div className="space-y-1.5">
+								<FieldLabel>Process</FieldLabel>
+								<MultiChips
+									suggestions={suggestions.processes}
+									selected={form.process}
+									onToggle={(v) => toggleItem("process", v)}
+									customInput={customProcess}
+									onCustomChange={setCustomProcess}
+									onCustomAdd={() =>
+										addCustom("process", customProcess, () =>
+											setCustomProcess(""),
+										)
+									}
+									placeholder="e.g. Honey, Washed…"
+								/>
+							</div>
+
+							<div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+								<div className="space-y-1.5">
+									<FieldLabel>Botanic</FieldLabel>
+									<OptionChips
+										options={suggestions.botanics}
+										value={form.botanic}
+										onChange={(v) => setField("botanic", v)}
+									/>
+								</div>
+								<div className="space-y-1.5">
+									<FieldLabel>Designation</FieldLabel>
+									<OptionChips
+										options={suggestions.designations}
+										value={form.designation}
+										onChange={(v) => setField("designation", v)}
+									/>
+								</div>
+							</div>
+
+							<div className="space-y-1.5">
+								<FieldLabel>Variety</FieldLabel>
+								<MultiChips
+									suggestions={suggestions.varieties}
+									selected={form.variety}
+									onToggle={(v) => toggleItem("variety", v)}
+									customInput={customVariety}
+									onCustomChange={setCustomVariety}
+									onCustomAdd={() =>
+										addCustom("variety", customVariety, () =>
+											setCustomVariety(""),
+										)
+									}
+									placeholder="e.g. Gesha, Bourbon…"
+								/>
+							</div>
+						</section>
+
+						{/* Flavor Profile */}
+						<section className="space-y-8">
+							<SectionTitle>Flavor Profile</SectionTitle>
+
+							<div className="space-y-1.5">
+								<FieldLabel>Dominant note</FieldLabel>
+								{suggestions.dominantNotes.map((note) => (
 									<button
-										key={b}
+										key={note}
 										type="button"
-										onClick={() => setField("brand", b)}
-										className={cn(
-											"px-3 py-1.5 rounded-lg text-sm font-medium transition-colors",
-											form.brand === b
-												? "bg-foreground text-background"
-												: "bg-muted text-muted-foreground hover:bg-muted/70 hover:text-foreground",
-										)}
+										onClick={() => setField("dominantNote", note)}
+										className={`flex items-center gap-1.5 border px-3 py-1.5 font-Recursive text-sm transition-all ${form.dominantNote === note ? "border-primary bg-primary/5 text-foreground" : "border-border bg-background text-muted-foreground hover:border-primary/40 hover:text-foreground"}`}
 									>
-										{b}
+										<span
+											className={`w-2 h-2 rounded-full ${colorSwatch[note]?.bgColor}`}
+										/>
+										{note}
 									</button>
 								))}
 							</div>
-						)}
-						<input
-							className="h-11 w-full rounded-lg border border-border/70 bg-background px-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring"
-							placeholder="e.g. Onyx Coffee Lab"
-							value={form.brand}
-							onChange={(e) => setField("brand", e.target.value)}
-						/>
-					</div>
-				</section>
 
-				{/* Origin & Processing */}
-				<section className="space-y-4">
-					<SectionTitle>Origin & Processing</SectionTitle>
-
-					<div className="space-y-1.5">
-						<FieldLabel>Origin</FieldLabel>
-						<MultiChips
-							suggestions={suggestions.origins}
-							selected={form.origin}
-							onToggle={(v) => toggleItem("origin", v)}
-							customInput={customOrigin}
-							onCustomChange={setCustomOrigin}
-							onCustomAdd={() =>
-								addCustom("origin", customOrigin, () => setCustomOrigin(""))
-							}
-							placeholder="Type a country or region…"
-						/>
-					</div>
-
-					<div className="space-y-1.5">
-						<FieldLabel>Roast level</FieldLabel>
-						<div className="flex flex-wrap gap-1.5">
-							{ROAST_LEVELS.map((lvl) => (
-								<button
-									key={lvl}
-									type="button"
-									onClick={() =>
-										setField("roastLevel", form.roastLevel === lvl ? "" : lvl)
+							<div className="space-y-1.5">
+								<FieldLabel>Flavors</FieldLabel>
+								<MultiChips
+									suggestions={suggestions.flavors}
+									selected={form.flavors}
+									onToggle={(v) => toggleItem("flavors", v)}
+									customInput={customFlavor}
+									onCustomChange={setCustomFlavor}
+									onCustomAdd={() =>
+										addCustom("flavors", customFlavor, () =>
+											setCustomFlavor(""),
+										)
 									}
-									className={cn(
-										"h-10 w-10 rounded-lg text-sm font-semibold transition-colors",
-										form.roastLevel === lvl
-											? "bg-foreground text-background"
-											: "bg-muted text-muted-foreground hover:bg-muted/70 hover:text-foreground",
-									)}
-								>
-									{lvl}
-								</button>
-							))}
-						</div>
-					</div>
+									placeholder="e.g. Blueberry, Dark chocolate…"
+								/>
+							</div>
 
-					<div className="space-y-1.5">
-						<FieldLabel>Process</FieldLabel>
-						<OptionChips
-							options={suggestions.processes}
-							value={form.process}
-							onChange={(v) => setField("process", v)}
-						/>
-					</div>
+							<div className="space-y-1.5">
+								<FieldLabel>Tasting notes</FieldLabel>
+								<MultiChips
+									suggestions={suggestions.tastingNotes}
+									selected={form.tastingNotes}
+									onToggle={(v) => toggleItem("tastingNotes", v)}
+									customInput={customNote}
+									onCustomChange={setCustomNote}
+									onCustomAdd={() =>
+										addCustom("tastingNotes", customNote, () =>
+											setCustomNote(""),
+										)
+									}
+									placeholder="More descriptive impressions…"
+								/>
+							</div>
+						</section>
 
-					<div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-						<div className="space-y-1.5">
-							<FieldLabel>Botanic</FieldLabel>
-							<OptionChips
-								options={suggestions.botanics}
-								value={form.botanic}
-								onChange={(v) => setField("botanic", v)}
-							/>
+						{/* Save */}
+						<div className="space-y-3 border-t border-border pt-4">
+							{status && (
+								<p className="text-sm text-muted-foreground">{status}</p>
+							)}
+							<button
+								type="submit"
+								disabled={!form.name.trim() || isSaving}
+								className="w-full h-12 rounded-xl bg-foreground text-background font-semibold text-sm transition-opacity disabled:opacity-40 hover:opacity-90"
+							>
+								{isSaving ? "Saving…" : "Save Bean"}
+							</button>
 						</div>
-						<div className="space-y-1.5">
-							<FieldLabel>Designation</FieldLabel>
-							<OptionChips
-								options={suggestions.designations}
-								value={form.designation}
-								onChange={(v) => setField("designation", v)}
-							/>
-						</div>
-					</div>
-
-					<div className="space-y-1.5">
-						<FieldLabel>Variety</FieldLabel>
-						<MultiChips
-							suggestions={suggestions.varieties}
-							selected={form.variety}
-							onToggle={(v) => toggleItem("variety", v)}
-							customInput={customVariety}
-							onCustomChange={setCustomVariety}
-							onCustomAdd={() =>
-								addCustom("variety", customVariety, () => setCustomVariety(""))
-							}
-							placeholder="e.g. Gesha, Bourbon…"
-						/>
-					</div>
+					</form>
 				</section>
-
-				{/* Flavor Profile */}
-				<section className="space-y-4">
-					<SectionTitle>Flavor Profile</SectionTitle>
-
-					<div className="space-y-1.5">
-						<FieldLabel>Dominant note</FieldLabel>
-						<OptionChips
-							options={suggestions.dominantNotes}
-							value={form.dominantNote}
-							onChange={(v) => setField("dominantNote", v)}
-						/>
-					</div>
-
-					<div className="space-y-1.5">
-						<FieldLabel>Flavors</FieldLabel>
-						<MultiChips
-							suggestions={suggestions.flavors}
-							selected={form.flavors}
-							onToggle={(v) => toggleItem("flavors", v)}
-							customInput={customFlavor}
-							onCustomChange={setCustomFlavor}
-							onCustomAdd={() =>
-								addCustom("flavors", customFlavor, () => setCustomFlavor(""))
-							}
-							placeholder="e.g. Blueberry, Dark chocolate…"
-						/>
-					</div>
-
-					<div className="space-y-1.5">
-						<FieldLabel>Tasting notes</FieldLabel>
-						<MultiChips
-							suggestions={suggestions.tastingNotes}
-							selected={form.tastingNotes}
-							onToggle={(v) => toggleItem("tastingNotes", v)}
-							customInput={customNote}
-							onCustomChange={setCustomNote}
-							onCustomAdd={() =>
-								addCustom("tastingNotes", customNote, () => setCustomNote(""))
-							}
-							placeholder="More descriptive impressions…"
-						/>
-					</div>
-				</section>
-
-				{/* Save */}
-				<div className="space-y-3 border-t border-border pt-4">
-					{status && <p className="text-sm text-muted-foreground">{status}</p>}
-					<button
-						type="submit"
-						disabled={!form.name.trim() || isSaving}
-						className="w-full h-12 rounded-xl bg-foreground text-background font-semibold text-sm transition-opacity disabled:opacity-40 hover:opacity-90"
-					>
-						{isSaving ? "Saving…" : "Save Bean"}
-					</button>
-				</div>
-			</form>
+			</div>
 		</div>
 	);
 }

@@ -1,4 +1,5 @@
-import type { BeanCardProps, Brews } from "@/types/default";
+import type { BeanCardProps } from "@/types/BeanTypes";
+import type { Brews } from "@/types/default";
 
 export type BrewSuggestions = {
 	bean: Array<BeanCardProps>;
