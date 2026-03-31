@@ -8,6 +8,7 @@ export default function MultiChips({
 	onCustomChange,
 	onCustomAdd,
 	placeholder,
+	requiredField,
 }: {
 	suggestions: string[];
 	selected: string[];
@@ -16,6 +17,7 @@ export default function MultiChips({
 	onCustomChange: (v: string) => void;
 	onCustomAdd: () => void;
 	placeholder: string;
+	requiredField?: string;
 }) {
 	const allChips = [
 		...suggestions,
@@ -23,7 +25,12 @@ export default function MultiChips({
 	];
 
 	return (
-		<div className="space-y-2">
+		<div
+			className={cn(
+				"space-y-2",
+				requiredField && "rounded-sm border border-destructive/60 p-2",
+			)}
+		>
 			{allChips.length > 0 && (
 				<div className="flex flex-wrap gap-1.5">
 					{allChips.map((s) => (
@@ -73,6 +80,9 @@ export default function MultiChips({
 					</button>
 				)}
 			</div>
+			{requiredField && (
+				<p className="text-xs text-destructive">{requiredField}</p>
+			)}
 		</div>
 	);
 }

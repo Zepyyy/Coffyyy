@@ -53,19 +53,6 @@ export default function MachineCard({ machine }: { machine: Machines }) {
 				</div>
 			</article>
 			<div className="squiggly-line w-full scale-x-150 scale-y-75 opacity-20" />
-			<article className="p-6">
-				<div className="text-sm font-light dark:text-primary-200 text-primary-800/70 tracking-tighter font-Mono underline decoration-2 decoration-dotted mb-1">
-					Induction
-				</div>
-				<div className="text-foreground font-medium font-Recursive text-sm">
-					{machine.induction ? (
-						<Tag text="Yes" color={"green"} size="sm" />
-					) : (
-						<Tag text="No" color={"blue"} size="sm" />
-					)}
-				</div>
-			</article>
-
 			<div className="mt-auto flex justify-end px-6 pb-3">
 				{confirmDelete ? (
 					<div className="flex items-center gap-2">

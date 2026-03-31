@@ -64,20 +64,28 @@
     --color-primary-200: var(--primary-200);
     --color-primary-700: var(--primary-700);
     --color-primary-800: var(--primary-800);
+    --color-primary-900: var(--primary-900);
 
     --color-tag-teal-100: var(--tag-teal-100);
     --color-tag-teal-900: var(--tag-teal-900);
+    --color-tag-teal-500: var(--tag-teal-500);
     --color-tag-green-100: var(--tag-green-100);
+    --color-tag-green-500: var(--tag-green-500);
     --color-tag-green-900: var(--tag-green-900);
     --color-tag-blue-100: var(--tag-blue-100);
+    --color-tag-blue-500: var(--tag-blue-500);
     --color-tag-blue-900: var(--tag-blue-900);
     --color-tag-yellow-100: var(--tag-yellow-100);
+    --color-tag-yellow-500: var(--tag-yellow-500);
     --color-tag-yellow-900: var(--tag-yellow-900);
     --color-tag-red-100: var(--tag-red-100);
+    --color-tag-red-500: var(--tag-red-500);
     --color-tag-red-900: var(--tag-red-900);
     --color-tag-purple-100: var(--tag-purple-100);
+    --color-tag-purple-500: var(--tag-purple-500);
     --color-tag-purple-900: var(--tag-purple-900);
     --color-tag-orange-100: var(--tag-orange-100);
+    --color-tag-orange-500: var(--tag-orange-500);
     --color-tag-orange-900: var(--tag-orange-900);
 }
 
@@ -106,18 +114,25 @@
     --primary-900: oklch(0.339 0.022 56);
 
     --tag-teal-900: oklch(0.916 0.033 221);
+    --tag-teal-500: oklch(0.684 0.058 206);
     --tag-teal-100: oklch(0.443 0.071 200);
     --tag-green-900: oklch(96.2% 0.044 156.743);
+    --tag-green-500: oklch(0.706 0.087 159);
     --tag-green-100: oklch(44.8% 0.119 151.328);
     --tag-blue-900: oklch(0.865 0.052 265);
+    --tag-blue-500: oklch(0.628 0.078 264);
     --tag-blue-100: oklch(0.374 0.11 263);
     --tag-yellow-900: oklch(0.949 0.032 76);
+    --tag-yellow-500: oklch(0.745 0.076 75);
     --tag-yellow-100: oklch(0.536 0.109 69);
     --tag-red-900: oklch(0.921 0.024 18);
+    --tag-red-500: oklch(0.669 0.077 19);
     --tag-red-100: oklch(0.425 0.137 25);
     --tag-purple-900: oklch(0.842 0.073 316);
+    --tag-purple-500: oklch(0.57 0.089 315);
     --tag-purple-100: oklch(0.273 0.105 312);
     --tag-orange-900: oklch(0.857 0.05 54);
+    --tag-orange-500: oklch(0.638 0.063 52);
     --tag-orange-100: oklch(0.404 0.081 49);
 
     --primary: oklch(0.4731 0.0363 74.69);

@@ -1,13 +1,14 @@
 import { useLiveQuery } from "dexie-react-hooks";
 import { type ChangeEvent, useMemo, useState } from "react";
 import FieldLabel from "@/components/log/FieldLabel";
-import MultiChips from "@/components/log/MultiChips";
+import MultiChips from "@/components/log/MultiChoiceChips";
 import OptionChips from "@/components/log/OptionChips";
 import QuickCard from "@/components/log/QuickCard";
 import SectionTitle from "@/components/log/SectionTitle";
 import { addBrew } from "@/db/crud/add";
 import { db } from "@/db/db";
 import { buildBrewSuggestions } from "@/lib/brewSuggestions";
+import { validateRequiredFields } from "@/lib/formValidation";
 import type { BeanCardProps } from "@/types/BeanTypes";
 import type { BrewForm } from "@/types/BrewTypes";
 
@@ -38,21 +39,29 @@ const SAVE_MESSAGES = [
 	"Saved! May your next cup be even better.",
 ];
 
+const REQUIRED_FIELDS: Partial<Record<keyof BrewForm, string>> = {
+	overallRating: "Give feedback.",
+};
+
 export default function BrewLog() {
 	const [form, setForm] = useState<BrewForm>(INITIAL);
 	const [customProfile, setCustomProfile] = useState("");
 	const [status, setStatus] = useState("");
 	const [isSaving, setIsSaving] = useState(false);
+	const [error, setError] = useState("");
+	const [fieldErrors, setFieldErrors] = useState<
+		Partial<Record<keyof BrewForm, string>>
+	>({});
 
 	const brews = useLiveQuery(() => db.Brews.toArray(), []);
-	const beanRecords = useLiveQuery(() => db.Beans.toArray(), []) ?? [];
-	const machineRecords = useLiveQuery(() => db.Machines.toArray(), []) ?? [];
+	const beanRecords = useLiveQuery(() => db.Beans.toArray(), []);
+	const machineRecords = useLiveQuery(() => db.Machines.toArray(), []);
 
 	const suggestions = useMemo(
 		() =>
 			buildBrewSuggestions(
 				brews ?? [],
-				beanRecords.map(
+				beanRecords?.map(
 					(b) =>
 						({
 							name: b.name ?? "",
@@ -60,8 +69,8 @@ export default function BrewLog() {
 							dominantNote: b.dominantNote ?? "",
 							selected: false,
 						}) as BeanCardProps,
-				),
-				machineRecords.map((m) => m.name ?? ""),
+				) ?? [],
+				machineRecords?.map((m) => m.name ?? "") ?? [],
 			),
 		[brews, beanRecords, machineRecords],
 	);
@@ -88,10 +97,18 @@ export default function BrewLog() {
 
 	async function handleSubmit(e: ChangeEvent) {
 		e.preventDefault();
-		setIsSaving(true);
+		setError("");
 		setStatus("");
+		const nextErrors = validateRequiredFields(form, REQUIRED_FIELDS);
+		if (Object.keys(nextErrors).length > 0) {
+			setFieldErrors(nextErrors);
+			setStatus("Please complete required fields.");
+			return;
+		}
+
+		setIsSaving(true);
 		try {
-			await addBrew({
+			const result = await addBrew({
 				bean: form.bean,
 				date: form.date,
 				overallRating: form.overallRating as
@@ -142,7 +159,9 @@ export default function BrewLog() {
 				machine: form.machine,
 				tasteProfiles: form.tasteProfiles,
 			});
+			setError(result instanceof Error ? result.message : String(result));
 			setForm(INITIAL);
+			setFieldErrors({});
 			setCustomProfile("");
 			setStatus(
 				SAVE_MESSAGES[Math.floor(Math.random() * SAVE_MESSAGES.length)],
@@ -182,6 +201,15 @@ export default function BrewLog() {
 								</div>
 							))}
 						</div>
+						<div>
+							{fieldErrors &&
+								Object.entries(fieldErrors).map(([key, value]) => (
+									<p key={key} className="text-xs text-destructive">
+										{value}
+									</p>
+								))}
+						</div>
+						{error && <p className="text-sm text-foreground py-1">{error}</p>}
 					</div>
 				</aside>
 				<section className="">
@@ -192,7 +220,7 @@ export default function BrewLog() {
 							<div className="space-y-2">
 								<div className="space-y-1.5">
 									<FieldLabel required>The bean</FieldLabel>
-									<div className="grid grid-cols-2 gap-1.5 sm:grid-cols-3">
+									<div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
 										{suggestions.bean.map((beanInfo) => (
 											<QuickCard
 												key={beanInfo.name}
@@ -206,11 +234,6 @@ export default function BrewLog() {
 											/>
 										))}
 									</div>
-									{/*<OptionChips
-								options={suggestions.bean.map((b) => b)}
-								value={form.bean}
-								onChange={(v) => setField("bean", v)}
-							/>*/}
 								</div>
 							</div>
 						</section>
@@ -223,7 +246,7 @@ export default function BrewLog() {
 								<div className="space-y-1.5">
 									<FieldLabel>Grind size</FieldLabel>
 									<input
-										className="h-11 w-full rounded-lg border border-border/70 bg-background px-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+										className="flex-1 w-full border border-border bg-background px-3 py-1.5 font-Recursive text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/40 rounded-none"
 										placeholder="e.g. 14 clicks, 800 µm"
 										value={form.grindSize}
 										onChange={(e) => setField("grindSize", e.target.value)}
@@ -231,24 +254,22 @@ export default function BrewLog() {
 								</div>
 
 								<div className="space-y-1.5">
-									<FieldLabel>Machine / method</FieldLabel>
-									<div className="space-y-1.5">
-										<FieldLabel>Process</FieldLabel>
-										<OptionChips
-											options={suggestions.machine.map((m) => m)}
-											value={form.machine ?? ""}
-											onChange={(v) => setField("machine", v)}
-										/>
-									</div>
+									<FieldLabel>Process</FieldLabel>
+									<OptionChips
+										options={suggestions.machine.map((m) => m)}
+										value={form.machine ?? ""}
+										onChange={(v) => setField("machine", v)}
+									/>
 								</div>
 							</div>
 
 							<div className="space-y-1.5">
-								<FieldLabel>Overall rating</FieldLabel>
+								<FieldLabel required>Overall rating</FieldLabel>
 								<OptionChips
 									options={suggestions.overallRating}
 									value={form.overallRating}
 									onChange={(v) => setField("overallRating", v)}
+									requiredField={fieldErrors.overallRating}
 								/>
 							</div>
 						</section>

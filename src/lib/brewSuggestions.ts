@@ -27,7 +27,7 @@ function rankByUsage(values: Array<string>): Array<string> {
 export function buildBrewSuggestions(
 	brews: Array<Brews>,
 	beanCardInfo: Array<BeanCardProps>,
-	machineNames: string[],
+	machineRecords: Array<string>,
 ): BrewSuggestions {
 	const bean: Array<BeanCardProps> = beanCardInfo;
 	const grindSize: Array<string> = [];
@@ -74,7 +74,7 @@ export function buildBrewSuggestions(
 		"🍃 Just right",
 		"💧Too weak",
 	];
-	const machine: Array<string> = machineNames;
+	const machine: Array<string> = machineRecords ?? [];
 	const tasteProfiles: Array<string> = [];
 
 	for (const brew of brews) {

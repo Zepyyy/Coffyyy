@@ -79,29 +79,29 @@ export default function BeanCard({ bean }: { bean: Beans }) {
 		<div className="relative z-20 flex h-full w-full flex-col overflow-hidden border border-primary/15 bg-background">
 			{/* Header row */}
 			<article
-				className={`p-4 relative w-full ${colorSwatch[bean.dominantNote]?.bgColor} overflow-hidden`}
+				className={`p-4 relative w-full ${colorSwatch[bean.dominantNote]?.bg} overflow-hidden`}
 			>
 				<div
-					className={`text-2xl font-Lora font-semibold leading-tight tracking-wide ${colorSwatch[bean.dominantNote]?.textColor}`}
+					className={`text-2xl font-Lora font-semibold leading-tight tracking-wide ${colorSwatch[bean.dominantNote]?.text}`}
 				>
 					{bean.name || "Unnamed bean"}
 				</div>
 
 				<div
-					className={`text-sm font-Mono uppercase tracking-[0.12em] font-medium dark:text-tag-primary-200 ${colorSwatch[bean.dominantNote]?.secondaryTextColor}`}
+					className={`text-sm font-Mono uppercase tracking-[0.12em] font-medium dark:text-tag-primary-200 ${colorSwatch[bean.dominantNote]?.secondaryText}`}
 				>
 					{bean.origin.join(", ")} · {bean.brand}
 				</div>
 				{/* Background text effect */}
 				<div
-					className={`text-8xl font-Lora font-bold absolute top-1/2 -translate-y-1/2 left-0 opacity-5 select-none text-nowrap ${colorSwatch[bean.dominantNote]?.textColor}`}
+					className={`text-8xl font-Lora font-bold absolute top-1/2 -translate-y-1/2 left-0 opacity-5 select-none text-nowrap ${colorSwatch[bean.dominantNote]?.text}`}
 				>
 					{bean.name || "Unnamed bean"}
 				</div>
 				{/* Top left icon */}
 				<NoteIcon
 					strokeWidth={2}
-					className={`size-6 absolute top-5 right-5 ${colorSwatch[bean.dominantNote]?.textColor}`}
+					className={`size-6 absolute top-5 right-5 ${colorSwatch[bean.dominantNote]?.text}`}
 				/>
 			</article>
 

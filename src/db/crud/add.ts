@@ -5,7 +5,13 @@ import { db } from "../db";
 
 async function addBean(bean: Omit<Beans, "id">) {
 	try {
-		return await db.Beans.bulkAdd([bean]);
+		// Check if a bean with the same name already exists
+		const existingBean = await db.Beans.where("name").equals(bean.name).first();
+		if (!existingBean) {
+			return await db.Beans.bulkAdd([bean]);
+		} else {
+			return new Error(`Bean with name ${bean.name} already exists`);
+		}
 	} catch (error) {
 		return error;
 	}
@@ -37,88 +43,82 @@ function SelectMultiple<T>(arr: T[], count: number): T[] {
 
 async function addRandomBean() {
 	try {
-		return await db.Beans.bulkAdd([
-			{
-				botanic: "Arabica",
-				name: SelectRandom([
-					"Okay",
-					"Randomly",
-					"This one",
-					" placeholder",
-					"Just doing it",
-					"Need more",
-					"Easy tpo add",
-					"and last qslidjfgb oqs",
+		return await addBean({
+			botanic: "Arabica",
+			name: SelectRandom([
+				"Okay",
+				"Randomly",
+				"This one",
+				" placeholder",
+				"Just doing it",
+				"Need more",
+				"Easy tpo add",
+				"and last qslidjfgb oqs",
+			]),
+			brand: SelectRandom(["Lugat", "The Barn", "Another Brand", "Last one"]),
+			designation: "Pure Origin",
+			dominantNote: SelectRandom([
+				"Fruity",
+				"Nutty",
+				"Floral",
+				"Sweet",
+				"Sour",
+				"Spices",
+				"Roasted",
+				"Green",
+			]),
+			finished: false,
+			flavors: ["mango", "Banan", "Lime"],
+			origin: [
+				SelectRandom([
+					"Colombia",
+					"France",
+					"Venezuela",
+					"Brazil",
+					"Argentina",
 				]),
-				brand: SelectRandom(["Lugat", "The Barn", "Another Brand", "Last one"]),
-				designation: "Pure Origin",
-				dominantNote: SelectRandom([
-					"Fruity",
-					"Nutty",
-					"Floral",
-					"Sweet",
-					"Sour",
-					"Spices",
-					"Roasted",
-					"Green",
-				]),
-				finished: false,
-				flavors: ["mango", "Banan", "Lime"],
-				origin: [
-					SelectRandom([
-						"Colombia",
-						"France",
-						"Venezuela",
-						"Brazil",
-						"Argentina",
-					]),
+			],
+			process: [SelectRandom(["Natural", "Honey", "Washed", "Semi-Processed"])],
+			rating: SelectRandom([1, 2, 3, 4, 5]),
+			roastLevel: SelectRandom([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+			status: SelectRandom(["Excellent", "Good", "Fair", "Poor"]),
+			tastingNotes: SelectMultiple(
+				[
+					"Mango",
+					"Banan",
+					"Lime",
+					"Apple",
+					"Orange",
+					"Nut",
+					"Chocolate",
+					"Almonds",
+					"Cherry",
+					"Berries",
 				],
-				process: [
-					SelectRandom(["Natural", "Honey", "Washed", "Semi-Processed"]),
-				],
-				rating: SelectRandom([1, 2, 3, 4, 5]),
-				roastLevel: SelectRandom([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
-				status: SelectRandom(["Excellent", "Good", "Fair", "Poor"]),
-				tastingNotes: SelectMultiple(
-					[
-						"Mango",
-						"Banan",
-						"Lime",
-						"Apple",
-						"Orange",
-						"Nut",
-						"Chocolate",
-						"Almonds",
-						"Cherry",
-						"Berries",
-					],
-					4,
-				),
-				variety: [SelectRandom(["Castillo", "Geisha"])],
-			} as Omit<Beans, "id">,
-		]);
+				4,
+			),
+			variety: [SelectRandom(["Castillo", "Geisha"])],
+		} as Omit<Beans, "id">);
 	} catch (error) {
 		return error;
 	}
 }
 async function addRandomMachine() {
 	try {
-		return await db.Machines.bulkAdd([
-			{
-				name: SelectRandom([
-					"This random machine",
-					"Another oen",
-					"And to finish",
-				]),
-				brand: SelectRandom(["Sage", "Hario", "V60"]),
-				capacity: "capacity 2",
-				grindRange: SelectRandom(["fine", "medium", "coarse"]),
-				purchaseDate: "01-01-2025",
-				induction: SelectRandom([true, false]),
-				model: "MODEL",
-				type: SelectRandom(["Espresso", "Moka Pot"]),
-			} as Omit<Machines, "id">,
-		]);
+		return await addMachine({
+			name: SelectRandom([
+				"This random machine",
+				"Another oen",
+				"And to finish",
+			]),
+			brand: SelectRandom(["Sage", "Hario", "V60"]),
+			capacity: "capacity 2",
+			grindRange: SelectRandom(["fine", "medium", "coarse"]),
+			purchaseDate: "01-01-2025",
+			induction: SelectRandom([true, false]),
+			model: "MODEL",
+			type: SelectRandom(["Espresso", "Moka Pot"]),
+		} as Omit<Machines, "id">);
 	} catch (error) {
 		return error;
 	}
@@ -131,20 +131,6 @@ async function addBrew(brew: Omit<Brews, "id">) {
 		return error;
 	}
 }
-
-// id: number;
-// bean: string;
-// overallRating: string;
-// grindSize: string;
-// date: Date;
-// acidity: string;
-// adjustementNeeded: string;
-// aftertaste: string;
-// bitterness: string;
-// mouthfeel: string;
-// strength: string;
-// machine: string;
-// tasteProfiles: Array<string>;
 
 async function addRandomBrew() {
 	console.log(await getRandomBean(), await getRandomMachine());
@@ -202,7 +188,10 @@ async function addRandomBrew() {
 				]),
 				strength: SelectRandom(["‼️ Too strong", "🍃 Just right", "💧Too weak"]),
 				machine: await getRandomMachine(),
-				tasteProfiles: [],
+				tasteProfiles: SelectMultiple(
+					["TasteOPfi", "AHAH", "LOUP", "OKOK", "Pofil", "LimePfo"],
+					2,
+				),
 			} as Omit<Brews, "id">,
 		]);
 	} catch (error) {
@@ -212,7 +201,15 @@ async function addRandomBrew() {
 
 async function addMachine(machine: Omit<Machines, "id">) {
 	try {
-		return await db.Machines.bulkAdd([machine]);
+		// Check if a bean with the same name already exists
+		const existingMachine = await db.Machines.where("name")
+			.equals(machine.name)
+			.first();
+		if (!existingMachine) {
+			return await db.Machines.bulkAdd([machine]);
+		} else {
+			return new Error(`Machine with name ${machine.name} already exists`);
+		}
 	} catch (error) {
 		return error;
 	}
@@ -221,8 +218,8 @@ async function addMachine(machine: Omit<Machines, "id">) {
 export {
 	addBean,
 	addBrew,
-	addRandomBrew,
 	addMachine,
 	addRandomBean,
+	addRandomBrew,
 	addRandomMachine,
 };

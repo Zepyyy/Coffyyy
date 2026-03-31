@@ -9,17 +9,15 @@ export default function QuickCard({
 	bean: BeanCardProps;
 	onClick?: () => void;
 }) {
+	const swatch = colorSwatch[bean.dominantNote];
 	return (
 		<button
 			type="button"
 			data-slot="toggle"
-			className={`relative overflow-hidden border cursor-pointer transition-colors text-start bg-background ${bean.selected ? " border-primary/40 bg-primary/5 backdrop-blur-xs" : " border-border bg-background hover:border-primary/40"}`}
+			className={`relative overflow-hidden border cursor-pointer transition-colors text-start bg-background ${bean.selected ? " border-primary/40 bg-primary/5 backdrop-blur-xs" : "border-border bg-background hover:border-primary/40"}`}
 			onClick={() => onClick?.()}
-			onKeyDown={() => onClick?.()}
 		>
-			<div
-				className={`h-2 w-full ${colorSwatch[bean.dominantNote]?.bgColor}`}
-			/>
+			<div className={`h-1.5 w-full ${swatch.stripe}`} />
 			<div className="px-2.5 py-2">
 				<p className="font-Lora text-lg font-semibold line-clamp-1 leading-snug">
 					{bean.name}

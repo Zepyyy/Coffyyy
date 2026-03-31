@@ -1,12 +1,12 @@
 import { useLiveQuery } from "dexie-react-hooks";
 import { type ChangeEvent, useMemo, useState } from "react";
 import FieldLabel from "@/components/log/FieldLabel";
-import OptionChips from "@/components/log/OptionChips";
 import SectionTitle from "@/components/log/SectionTitle";
+import SingleChoiceChips from "@/components/log/SingleChoiceChips";
 import { addMachine } from "@/db/crud/add";
 import { db } from "@/db/db";
+import { validateRequiredFields } from "@/lib/formValidation";
 import { buildMachineSuggestions } from "@/lib/machineSuggestions";
-import { cn } from "@/lib/utils";
 import type { MachineForm } from "@/types/MachineTypes";
 
 const INITIAL: MachineForm = {
@@ -17,7 +17,6 @@ const INITIAL: MachineForm = {
 	grindRange: "",
 	capacity: "",
 	purchaseDate: "",
-	induction: "",
 };
 
 const SAVE_MESSAGES = [
@@ -28,36 +27,10 @@ const SAVE_MESSAGES = [
 	"Saved! Future brew sessions thank you.",
 ];
 
-function SuggestionChips({
-	options,
-	value,
-	onChange,
-}: {
-	options: string[];
-	value: string;
-	onChange: (v: string) => void;
-}) {
-	if (options.length === 0) return null;
-	return (
-		<div className="flex flex-wrap gap-1.5 mb-1.5">
-			{options.map((opt) => (
-				<button
-					key={opt}
-					type="button"
-					onClick={() => onChange(value === opt ? "" : opt)}
-					className={cn(
-						"px-3 py-1.5 rounded-lg text-sm font-medium transition-colors",
-						value === opt
-							? "bg-foreground text-background"
-							: "bg-muted text-muted-foreground hover:bg-muted/70 hover:text-foreground",
-					)}
-				>
-					{opt}
-				</button>
-			))}
-		</div>
-	);
-}
+const REQUIRED_FIELDS: Partial<Record<keyof MachineForm, string>> = {
+	brand: "Enter a brand for this machine.",
+	type: "Enter a type for this machine.",
+};
 
 function normalizeOptional(value: string) {
 	const trimmed = value.trim();
@@ -68,6 +41,15 @@ export default function MachinesLog() {
 	const [form, setForm] = useState<MachineForm>(INITIAL);
 	const [status, setStatus] = useState("");
 	const [isSaving, setIsSaving] = useState(false);
+	const [error, setError] = useState("");
+
+	const [customBrand, setCustomBrand] = useState("");
+	const [customModel, setCustomModel] = useState("");
+	const [customType, setCustomType] = useState("");
+	const [customCapacity, setCustomCapacity] = useState("");
+	const [fieldErrors, setFieldErrors] = useState<
+		Partial<Record<keyof MachineForm, string>>
+	>({});
 
 	const machines = useLiveQuery(() => db.Machines.toArray(), []);
 	const suggestions = useMemo(
@@ -82,21 +64,33 @@ export default function MachinesLog() {
 		setForm((f) => ({ ...f, [field]: value }));
 	}
 
+	function selectCustom(field: keyof MachineForm, value: string) {
+		setField(field, value.trim());
+	}
+
 	async function handleSubmit(e: ChangeEvent) {
 		e.preventDefault();
-		setIsSaving(true);
+		setError("");
 		setStatus("");
+		const nextErrors = validateRequiredFields(form, REQUIRED_FIELDS);
+		if (Object.keys(nextErrors).length > 0) {
+			setFieldErrors(nextErrors);
+			setStatus("Please complete required fields.");
+			return;
+		}
+
+		setIsSaving(true);
 		try {
-			await addMachine({
-				name: normalizeOptional(form.name),
-				brand: normalizeOptional(form.brand),
-				model: normalizeOptional(form.model),
+			const result = await addMachine({
+				name: normalizeOptional(form.name) ?? "",
+				brand: normalizeOptional(form.brand) ?? "",
+				model: normalizeOptional(form.model) ?? "",
 				type: form.type,
-				grindRange: normalizeOptional(form.grindRange),
-				capacity: normalizeOptional(form.capacity),
-				purchaseDate: normalizeOptional(form.purchaseDate),
-				induction: form.induction === "" ? undefined : form.induction === "yes",
+				grindRange: normalizeOptional(form.grindRange) ?? "",
+				capacity: normalizeOptional(form.capacity) ?? "",
+				purchaseDate: normalizeOptional(form.purchaseDate) ?? "",
 			});
+			setError(result instanceof Error ? result.message : String(result));
 			setForm(INITIAL);
 			setStatus(
 				SAVE_MESSAGES[Math.floor(Math.random() * SAVE_MESSAGES.length)],
@@ -134,6 +128,15 @@ export default function MachinesLog() {
 								</div>
 							))}
 						</div>
+						<div>
+							{fieldErrors &&
+								Object.entries(fieldErrors).map(([key, value]) => (
+									<p key={key} className="text-xs text-destructive">
+										{value}
+									</p>
+								))}
+						</div>
+						{error && <p className="text-sm text-foreground py-1">{error}</p>}
 					</div>
 				</aside>
 				<section>
@@ -145,7 +148,7 @@ export default function MachinesLog() {
 							<div className="space-y-1.5">
 								<FieldLabel required>Name</FieldLabel>
 								<input
-									className="h-12 w-full rounded-lg border border-border/70 bg-background px-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+									className="flex-1 w-full border border-border bg-background px-3 py-1.5 font-Recursive text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/40 rounded-none"
 									placeholder="e.g. Daily Driver, The Beast"
 									value={form.name}
 									onChange={(e) => setField("name", e.target.value)}
@@ -155,31 +158,28 @@ export default function MachinesLog() {
 
 							<div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
 								<div className="space-y-1.5">
-									<FieldLabel>Brand</FieldLabel>
-									<SuggestionChips
+									<FieldLabel required>Brand</FieldLabel>
+									<SingleChoiceChips
 										options={suggestions.brands}
-										value={form.brand}
+										selected={form.brand}
 										onChange={(v) => setField("brand", v)}
-									/>
-									<input
-										className="h-11 w-full rounded-lg border border-border/70 bg-background px-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring"
-										placeholder="e.g. Baratza, Breville"
-										value={form.brand}
-										onChange={(e) => setField("brand", e.target.value)}
+										placeholder="e.g. Onyx Coffee Lab"
+										customInput={customBrand}
+										onCustomChange={setCustomBrand}
+										onCustomAdd={() => selectCustom("brand", customBrand)}
+										requiredField={fieldErrors.brand}
 									/>
 								</div>
 								<div className="space-y-1.5">
 									<FieldLabel>Model</FieldLabel>
-									<SuggestionChips
+									<SingleChoiceChips
 										options={suggestions.models}
-										value={form.model}
+										selected={form.model}
 										onChange={(v) => setField("model", v)}
-									/>
-									<input
-										className="h-11 w-full rounded-lg border border-border/70 bg-background px-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring"
-										placeholder="e.g. Encore ESP"
-										value={form.model}
-										onChange={(e) => setField("model", e.target.value)}
+										placeholder="e.g. Onyx Coffee Lab"
+										customInput={customModel}
+										onCustomChange={setCustomModel}
+										onCustomAdd={() => selectCustom("model", customModel)}
 									/>
 								</div>
 							</div>
@@ -190,49 +190,39 @@ export default function MachinesLog() {
 							<SectionTitle>Specs</SectionTitle>
 
 							<div className="space-y-1.5">
-								<FieldLabel>Type</FieldLabel>
-								<SuggestionChips
-									options={suggestions.types}
-									value={form.type}
-									onChange={(v) =>
-										setField("type", v as "Espresso" | "Moka Pot")
-									}
-								/>
+								<FieldLabel>Grind range</FieldLabel>
 								<input
-									className="h-11 w-full rounded-lg border border-border/70 bg-background px-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring"
-									placeholder="e.g. Drip"
-									value={form.type}
-									onChange={(e) => setField("type", e.target.value)}
+									className="flex-1 w-full border border-border bg-background px-3 py-1.5 font-Recursive text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/40 rounded-none"
+									placeholder="e.g. 1–40 clicks"
+									value={form.grindRange}
+									onChange={(e) => setField("grindRange", e.target.value)}
 								/>
 							</div>
-
 							<div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
 								<div className="space-y-1.5">
-									<FieldLabel>Grind range</FieldLabel>
-									<SuggestionChips
-										options={suggestions.grindRanges}
-										value={form.grindRange}
-										onChange={(v) => setField("grindRange", v)}
-									/>
-									<input
-										className="h-11 w-full rounded-lg border border-border/70 bg-background px-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring"
-										placeholder="e.g. 1–40 clicks"
-										value={form.grindRange}
-										onChange={(e) => setField("grindRange", e.target.value)}
+									<FieldLabel required>Type</FieldLabel>
+									<SingleChoiceChips
+										options={suggestions.types}
+										selected={form.type}
+										onChange={(v) => setField("type", v)}
+										placeholder="E.g. Espresso"
+										customInput={customType}
+										onCustomChange={setCustomType}
+										onCustomAdd={() => selectCustom("type", customType)}
+										requiredField={fieldErrors.type}
 									/>
 								</div>
 								<div className="space-y-1.5">
 									<FieldLabel>Capacity</FieldLabel>
-									<SuggestionChips
+									<SingleChoiceChips
 										options={suggestions.capacities}
-										value={form.capacity}
+										selected={form.capacity}
 										onChange={(v) => setField("capacity", v)}
-									/>
-									<input
-										className="h-11 w-full rounded-lg border border-border/70 bg-background px-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring"
 										placeholder="e.g. 2 cups / 300ml"
-										value={form.capacity}
-										onChange={(e) => setField("capacity", e.target.value)}
+										customInput={customCapacity}
+										onCustomChange={setCustomCapacity}
+										onCustomAdd={() => selectCustom("capacity", customCapacity)}
+										requiredField={fieldErrors.capacity}
 									/>
 								</div>
 							</div>
@@ -246,21 +236,9 @@ export default function MachinesLog() {
 								<FieldLabel>Purchase date</FieldLabel>
 								<input
 									type="date"
-									className="h-11 w-full rounded-lg border border-border/70 bg-background px-3 text-sm text-muted-foreground focus:text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+									className="flex-1 w-full border border-border bg-background px-3 py-1.5 font-Recursive text-sm text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/40 rounded-none"
 									value={form.purchaseDate}
 									onChange={(e) => setField("purchaseDate", e.target.value)}
-								/>
-							</div>
-
-							<div className="space-y-1.5">
-								<FieldLabel>Induction compatible?</FieldLabel>
-								<OptionChips
-									options={["yes", "no", "unknown"]}
-									value={form.induction}
-									onChange={(v) =>
-										setField("induction", v as "yes" | "no" | "")
-									}
-									unknown="unknown"
 								/>
 							</div>
 						</section>

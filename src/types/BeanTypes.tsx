@@ -2,7 +2,7 @@ export type Beans = {
 	id: number;
 	name: string;
 	rating: number;
-	status: "Excellent" | "Good" | "Mid" | "Horrible" | "New" | "default";
+	status: "Excellent" | "Good" | "Mid" | "Horrible" | "New" | "";
 	tastingNotes: string[];
 	dominantNote:
 		| "Fruity"
@@ -18,8 +18,8 @@ export type Beans = {
 	process: string[];
 	variety: string[];
 	brand: string;
-	botanic: "Arabica" | "Robusta" | "default";
-	designation: "Pure Origin" | "Blend" | "default";
+	botanic: "Arabica" | "Robusta" | "";
+	designation: "Pure Origin" | "Blend" | "";
 	flavors: string[];
 	finished: boolean;
 };

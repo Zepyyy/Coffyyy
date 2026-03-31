@@ -1,13 +1,12 @@
 export type Machines = {
 	id: number;
-	name?: string;
-	brand?: string;
-	type?: string;
-	purchaseDate?: string;
-	model?: string;
-	induction?: boolean;
-	grindRange?: string;
-	capacity?: string;
+	name: string;
+	brand: string;
+	type: string;
+	purchaseDate: string;
+	model: string;
+	grindRange: string;
+	capacity: string;
 };
 
 export type MachineForm = {
@@ -18,7 +17,6 @@ export type MachineForm = {
 	grindRange: string;
 	capacity: string;
 	purchaseDate: string;
-	induction: "" | "yes" | "no";
 };
 
 export type MachineSuggestions = {

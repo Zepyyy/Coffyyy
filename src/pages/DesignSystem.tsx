@@ -569,7 +569,7 @@ export default function DesignSystem() {
 								botanic: "Arabica",
 								brand: "BeanBrand",
 								dominantNote: "Floral",
-								designation: "default",
+								designation: "",
 								roastLevel: 4,
 								finished: false,
 								flavors: [""],
@@ -590,7 +590,6 @@ export default function DesignSystem() {
 								capacity: "123",
 								brand: "Placeholder",
 								grindRange: "123",
-								induction: false,
 								model: "Placeholder",
 								purchaseDate: "01-01-2024",
 							}}

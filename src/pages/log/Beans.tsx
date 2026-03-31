@@ -1,12 +1,14 @@
 import { useLiveQuery } from "dexie-react-hooks";
 import { type ChangeEvent, useMemo, useState } from "react";
 import FieldLabel from "@/components/log/FieldLabel";
-import MultiChips from "@/components/log/MultiChips";
+import MultiChips from "@/components/log/MultiChoiceChips";
 import OptionChips from "@/components/log/OptionChips";
 import SectionTitle from "@/components/log/SectionTitle";
+import SingleChoiceChips from "@/components/log/SingleChoiceChips";
 import { addBean } from "@/db/crud/add";
 import { db } from "@/db/db";
 import { buildBeanSuggestions } from "@/lib/beanSuggestions";
+import { validateRequiredFields } from "@/lib/formValidation";
 import { cn } from "@/lib/utils";
 import type { BeanForm } from "@/types/BeanTypes";
 
@@ -35,6 +37,12 @@ const SAVE_MESSAGES = [
 ];
 
 const ROAST_LEVELS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
+const REQUIRED_FIELDS: Partial<Record<keyof BeanForm, string>> = {
+	name: "Bean name is required.",
+	flavors: "Pick one flavor.",
+	process: "Pick at least one process.",
+	origin: "Origin is required.",
+};
 
 export default function BeansLog() {
 	const [form, setForm] = useState<BeanForm>(INITIAL);
@@ -43,6 +51,11 @@ export default function BeansLog() {
 	const [customFlavor, setCustomFlavor] = useState("");
 	const [customNote, setCustomNote] = useState("");
 	const [customProcess, setCustomProcess] = useState("");
+	const [customBrand, setCustomBrand] = useState("");
+	const [error, setError] = useState("");
+	const [fieldErrors, setFieldErrors] = useState<
+		Partial<Record<keyof BeanForm, string>>
+	>({});
 
 	const [status, setStatus] = useState("");
 	const [isSaving, setIsSaving] = useState(false);
@@ -50,8 +63,18 @@ export default function BeansLog() {
 	const beans = useLiveQuery(() => db.Beans.toArray(), []);
 	const suggestions = useMemo(() => buildBeanSuggestions(beans ?? []), [beans]);
 
+	function clearFieldError(field: keyof BeanForm) {
+		setFieldErrors((prev) => {
+			if (!prev[field]) return prev;
+			const next = { ...prev };
+			delete next[field];
+			return next;
+		});
+	}
+
 	function setField<K extends keyof BeanForm>(field: K, value: BeanForm[K]) {
 		setForm((f) => ({ ...f, [field]: value }));
+		clearFieldError(field);
 	}
 
 	function toggleItem(
@@ -67,6 +90,11 @@ export default function BeansLog() {
 					: [...list, value],
 			};
 		});
+		clearFieldError(field);
+	}
+
+	function selectCustom(field: keyof BeanForm, value: string) {
+		setField(field, value.trim());
 	}
 
 	function addCustom(
@@ -80,29 +108,32 @@ export default function BeansLog() {
 		if (!current.includes(val)) {
 			setForm((f) => ({ ...f, [field]: [...(f[field] as string[]), val] }));
 		}
+		clearFieldError(field);
 		clearFn();
 	}
 
 	async function handleSubmit(e: ChangeEvent) {
 		e.preventDefault();
-		setIsSaving(true);
+		setError("");
 		setStatus("");
+		const nextErrors = validateRequiredFields(form, REQUIRED_FIELDS);
+		if (Object.keys(nextErrors).length > 0) {
+			setFieldErrors(nextErrors);
+			setStatus("Please complete required fields.");
+			return;
+		}
+
+		setIsSaving(true);
 		try {
 			const roast = Number(form.roastLevel);
-			await addBean({
+			const result = await addBean({
 				name: form.name,
 				brand: form.brand,
 				rating: 0,
 				status: "New",
 				process: form.process,
-				botanic: (form.botanic || "default") as
-					| "Arabica"
-					| "Robusta"
-					| "default",
-				designation: (form.designation || "?") as
-					| "Pure Origin"
-					| "Blend"
-					| "default",
+				botanic: (form.botanic as "Arabica" | "Robusta" | "") || "",
+				designation: (form.designation || "?") as "Pure Origin" | "Blend" | "",
 				origin: form.origin,
 				variety: form.variety,
 				roastLevel: Number.isFinite(roast) && roast > 0 ? roast : -1,
@@ -119,7 +150,9 @@ export default function BeansLog() {
 				tastingNotes: form.tastingNotes,
 				finished: false,
 			});
+			setError(result instanceof Error ? result.message : String(result));
 			setForm(INITIAL);
+			setFieldErrors({});
 			setStatus(
 				SAVE_MESSAGES[Math.floor(Math.random() * SAVE_MESSAGES.length)],
 			);
@@ -156,6 +189,15 @@ export default function BeansLog() {
 								</div>
 							))}
 						</div>
+						<div>
+							{fieldErrors &&
+								Object.entries(fieldErrors).map(([key, value]) => (
+									<p key={key} className="text-xs text-destructive">
+										{value}
+									</p>
+								))}
+						</div>
+						{error && <p className="text-sm text-foreground py-1">{error}</p>}
 					</div>
 				</aside>
 				<section className="min-w-0 max-w-4/5">
@@ -167,40 +209,32 @@ export default function BeansLog() {
 							<div className="space-y-1.5">
 								<FieldLabel required>Bean name</FieldLabel>
 								<input
-									className="h-12 w-full rounded-lg border border-border/70 bg-background px-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+									className={cn(
+										"w-full not-last-of-type:flex-1 border bg-background px-3 py-1.5 font-Recursive text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 rounded-none",
+										fieldErrors.name
+											? "border-destructive focus:ring-destructive/40"
+											: "border-border focus:ring-primary/40",
+									)}
 									placeholder="e.g. El Paraiso — Red Berries"
 									value={form.name}
 									onChange={(e) => setField("name", e.target.value)}
 									required
 								/>
+								{fieldErrors.name && (
+									<p className="text-xs text-destructive">{fieldErrors.name}</p>
+								)}
 							</div>
 
 							<div className="space-y-1.5">
 								<FieldLabel>Brand / Roaster</FieldLabel>
-								{suggestions.brands.length > 0 && (
-									<div className="flex flex-wrap gap-1.5 mb-1.5">
-										{suggestions.brands.map((b) => (
-											<button
-												key={b}
-												type="button"
-												onClick={() => setField("brand", b)}
-												className={cn(
-													"px-3 py-1.5 rounded-lg text-sm font-medium transition-colors",
-													form.brand === b
-														? "bg-foreground text-background"
-														: "bg-muted text-muted-foreground hover:bg-muted/70 hover:text-foreground",
-												)}
-											>
-												{b}
-											</button>
-										))}
-									</div>
-								)}
-								<input
-									className="h-11 w-full rounded-lg border border-border/70 bg-background px-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+								<SingleChoiceChips
+									options={suggestions.brands}
+									selected={form.brand}
+									onChange={(v) => setField("brand", v)}
 									placeholder="e.g. Onyx Coffee Lab"
-									value={form.brand}
-									onChange={(e) => setField("brand", e.target.value)}
+									customInput={customBrand}
+									onCustomChange={setCustomBrand}
+									onCustomAdd={() => selectCustom("brand", customBrand)}
 								/>
 							</div>
 						</section>
@@ -210,7 +244,7 @@ export default function BeansLog() {
 							<SectionTitle>Origin & Processing</SectionTitle>
 
 							<div className="space-y-1.5">
-								<FieldLabel>Origin</FieldLabel>
+								<FieldLabel required>Origin</FieldLabel>
 								<MultiChips
 									suggestions={suggestions.origins}
 									selected={form.origin}
@@ -221,6 +255,7 @@ export default function BeansLog() {
 										addCustom("origin", customOrigin, () => setCustomOrigin(""))
 									}
 									placeholder="Type a country or region…"
+									requiredField={fieldErrors.origin}
 								/>
 							</div>
 
@@ -266,7 +301,7 @@ export default function BeansLog() {
 							</div>
 
 							<div className="space-y-1.5">
-								<FieldLabel>Process</FieldLabel>
+								<FieldLabel required>Process</FieldLabel>
 								<MultiChips
 									suggestions={suggestions.processes}
 									selected={form.process}
@@ -279,6 +314,7 @@ export default function BeansLog() {
 										)
 									}
 									placeholder="e.g. Honey, Washed…"
+									requiredField={fieldErrors.process}
 								/>
 							</div>
 
@@ -326,7 +362,7 @@ export default function BeansLog() {
 							<SectionTitle>Flavor Profile</SectionTitle>
 
 							<div className="space-y-1.5">
-								<FieldLabel>Dominant note</FieldLabel>
+								<FieldLabel required>Dominant note</FieldLabel>
 								<OptionChips
 									options={suggestions.dominantNotes}
 									value={form.dominantNote}
@@ -336,7 +372,7 @@ export default function BeansLog() {
 							</div>
 
 							<div className="space-y-1.5">
-								<FieldLabel>Flavors</FieldLabel>
+								<FieldLabel required>Flavors</FieldLabel>
 								<MultiChips
 									suggestions={suggestions.flavors}
 									selected={form.flavors}
@@ -349,6 +385,7 @@ export default function BeansLog() {
 										)
 									}
 									placeholder="e.g. Blueberry, Dark chocolate…"
+									requiredField={fieldErrors.flavors}
 								/>
 							</div>
 
@@ -377,7 +414,7 @@ export default function BeansLog() {
 							)}
 							<button
 								type="submit"
-								disabled={!form.name.trim() || isSaving}
+								disabled={isSaving}
 								className="w-full h-12 rounded-xl bg-foreground text-background font-semibold text-sm transition-opacity disabled:opacity-40 hover:opacity-90"
 							>
 								{isSaving ? "Saving…" : "Save Bean"}
