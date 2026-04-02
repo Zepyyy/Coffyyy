@@ -1,73 +1,84 @@
-# React + TypeScript + Vite
+# Coffyyy
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Coffyyy is a client-side coffee journal built with Vite, React, and TypeScript. It helps track beans, machines, and brew sessions in the browser, then surfaces quick stats such as recent brews, unique beans brewed, and the best-rated grind size.
 
-Currently, two official plugins are available:
+## What It Does
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Log espresso brews with bean, machine, dose, yield, extraction time, flow, and a quick rating.
+- Add beans to a personal library with origin, process, roast level, dominant note, flavors, and tasting notes.
+- Add brewing equipment and reuse it through suggestions in later forms.
+- Browse a filterable library of beans and machines.
+- Review home-screen insights from locally stored brew history.
+- Toggle light and dark themes.
 
-## React Compiler
+## Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- React 19 + TypeScript
+- Vite 7
+- Tailwind CSS 4
+- Dexie + IndexedDB for local persistence
+- React Router 7
+- ESLint and Biome
 
-## Expanding the ESLint configuration
+There is no backend in this repo. All app data lives in the browser’s IndexedDB database named `Coffyyy`.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## App Routes
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- `/home`: dashboard with quick actions, brew stats, and recent brews
+- `/log`: entry point for logging flows
+- `/log/brew`: multi-step brew form
+- `/log/bean`: bean catalog form
+- `/log/machine`: equipment form
+- `/library`: searchable bean and machine library
+- `/history`: placeholder/history work area
+- `/designsystem`: internal component showcase
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## Project Structure
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```text
+src/
+  components/     Reusable UI and feature-specific cards/forms
+  contexts/       Theme context
+  db/             Dexie database and CRUD helpers
+  hooks/api/      Live-query hooks backed by Dexie
+  lib/api/        Read/query helpers for beans, brews, machines, stats
+  pages/          Route components
+  providers/      App-level providers
+  types/          Shared TypeScript models
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+`@/` is aliased to `src/`.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Getting Started
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev
 ```
+
+Open the local Vite URL shown in the terminal.
+
+## Scripts
+
+- `npm run dev` starts the development server.
+- `npm run build` type-checks and builds the production bundle.
+- `npm run preview` serves the built app locally.
+- `npm run lint` runs ESLint.
+- `npm run biome` formats `src/` with Biome.
+
+Note: `npm run biome` uses `bunx`, so Bun must be installed even if you use npm for the rest of the project.
+
+## Data Model
+
+The app stores three main records:
+
+- `Beans`: catalog metadata such as brand, origin, process, roast level, and flavor profile
+- `Machines`: equipment metadata such as brand, model, type, grind range, and capacity
+- `Brews`: shot-level logs including bean, machine, weights, grind size, time, flow, date, and rating
+
+## Current State
+
+- IndexedDB powers the app, so clearing browser storage will remove local data.
+- Suggestions in the log forms are generated from previously saved beans and machines.
+- No automated test runner is configured yet.
+- The `History` page is not feature-complete and currently acts more like a scaffold than a finished archive view.
