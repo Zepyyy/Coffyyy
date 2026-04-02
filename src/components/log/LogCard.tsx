@@ -24,7 +24,7 @@ export default function LogCard({
 						"absolute inset-0 flex flex-col border border-border bg-background-light p-4 shadow-[0_10px_22px_rgba(0,0,0,0.1)] backface-hidden",
 					)}
 				>
-					<div className="flex w-fit border border-dashed border-primary/24 bg-primary-200/24 px-2 py-1 font-Mono text-xs tracking-widest uppercase text-primary-800/80">
+					<div className="flex w-fit border border-dashed border-primary/24 bg-primary-200/24 px-2 py-1 font-Mono text-xs tracking-widest uppercase  text-primary-800 dark:text-primary-100">
 						Your brew
 					</div>
 					<div className="flex flex-col gap-1.5 justify-start pt-8 h-full">
