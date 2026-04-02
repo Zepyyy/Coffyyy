@@ -27,7 +27,8 @@ export type BeanCardProps = {
 	name: string;
 	origin: string[];
 	dominantNote: Beans["dominantNote"];
-	selected: boolean;
+	process?: string[];
+	roastLevel?: number;
 };
 
 export type MultiTagInputProps = {
@@ -50,14 +51,23 @@ export type BeanForm = {
 };
 
 export type BeanSuggestions = {
-	names: Array<string>;
 	processes: Array<string>;
-	botanics: Array<string>;
-	designations: Array<string>;
 	brands: Array<string>;
 	origins: Array<string>;
 	varieties: Array<string>;
-	dominantNotes: Array<Beans["dominantNote"]>;
 	flavors: Array<string>;
 	tastingNotes: Array<string>;
+};
+
+export type BeanDisplay = {
+	id: number;
+	name: string;
+	dominantNote: Beans["dominantNote"];
+};
+
+export type BeanFilters = {
+	origin: string[];
+	dominantNote: Beans["dominantNote"] | "";
+	process: string[];
+	roastLevel: number | null;
 };

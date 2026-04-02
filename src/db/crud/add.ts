@@ -1,7 +1,9 @@
+import { SelectMultiple, SelectRandom } from "@/lib/utils";
 import type { Beans } from "@/types/BeanTypes";
 import type { Brews } from "@/types/BrewTypes";
 import type { Machines } from "@/types/MachineTypes";
 import { db } from "../db";
+import { getRandomBean, getRandomMachine } from "./get";
 
 async function addBean(bean: Omit<Beans, "id">) {
 	try {
@@ -15,30 +17,6 @@ async function addBean(bean: Omit<Beans, "id">) {
 	} catch (error) {
 		return error;
 	}
-}
-
-export async function getRandomBean(): Promise<Beans["name"] | undefined> {
-	const beans = await db.Beans.toArray();
-	return SelectRandom(beans.map((bean) => bean.name));
-}
-
-export async function getRandomMachine(): Promise<
-	Machines["name"] | undefined
-> {
-	const machines = await db.Machines.toArray();
-	return SelectRandom(machines.map((machine) => machine.name));
-}
-
-function SelectRandom<T>(arr: T[]): T {
-	return arr[Math.floor(Math.random() * arr.length)];
-}
-
-function SelectMultiple<T>(arr: T[], count: number): T[] {
-	const result: T[] = [];
-	for (let i = 0; i < count; i++) {
-		result.push(SelectRandom(arr));
-	}
-	return result;
 }
 
 async function addRandomBean() {
@@ -145,53 +123,24 @@ async function addRandomBrew() {
 	try {
 		return await db.Brews.bulkAdd([
 			{
-				acidity: SelectRandom([
-					"⚡ Too sharp/sour",
-					"🍋 Bright/Lively",
-					"😊 Balanced",
-					"😴 Flat/Dull",
-				]),
 				bean: await getRandomBean(),
-				overallRating: SelectRandom([
-					"Excellent",
-					"Good",
-					"Mid",
-					"Horrible",
-					"Burnt🔥",
-				]),
-				grindSize: SelectRandom(["fine", "medium", "coarse"]),
 				date: new Date(),
-				adjustementNeeded: SelectRandom([
-					"Keep this setting 👍",
-					"Grind finer next time ⬇️",
-					"Grind coarser next time ⬆️",
-					"Try different machine 🔄",
-					"Fuck this bean ‼️",
+				overallRating: SelectRandom([1, 2, 3, 4, 5]),
+				grindSize: SelectRandom(["fine", "medium", "coarse"]),
+				beanWeight: SelectRandom([10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]),
+				espressoWeight: SelectRandom([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+				flow: SelectRandom(["even", "uneven"]),
+				extractionTime: SelectRandom([
+					"30s",
+					"40s",
+					"50s",
+					"60s",
+					"70s",
+					"80s",
+					"90s",
+					"100s",
 				]),
-				aftertaste: SelectRandom([
-					"✨ Amazing - lingering sweetness",
-					"👍 Pleasant",
-					"😐 Neutral",
-					"👎 Unpleasant/harsh",
-				]),
-				bitterness: SelectRandom([
-					"👍 Barely noticeable",
-					"🍫 Pleasant bitter",
-					"😐 Neutral",
-					"👎 Unpleasant/harsh",
-				]),
-				mouthfeel: SelectRandom([
-					"✨ Amazing - lingering sweetness",
-					"👍 Pleasant",
-					"😐 Neutral",
-					"👎 Unpleasant/harsh",
-				]),
-				strength: SelectRandom(["‼️ Too strong", "🍃 Just right", "💧Too weak"]),
 				machine: await getRandomMachine(),
-				tasteProfiles: SelectMultiple(
-					["TasteOPfi", "AHAH", "LOUP", "OKOK", "Pofil", "LimePfo"],
-					2,
-				),
 			} as Omit<Brews, "id">,
 		]);
 	} catch (error) {
