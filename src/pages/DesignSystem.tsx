@@ -17,6 +17,7 @@ import BeanCard from "@/components/library/BeanCard";
 import FilterCard from "@/components/library/FilterCard";
 import MachineCard from "@/components/library/MachineCard";
 import Dial from "@/components/log/Dial";
+import LogCard from "@/components/log/LogCard";
 import QuickCard from "@/components/log/QuickCard";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -607,6 +608,27 @@ export default function DesignSystem() {
 							}}
 						/>
 					</div>
+				</div>
+			</Section>
+
+			<Section
+				title="Log Card"
+				description="Design concept for logging and viewing individual brew sessions."
+			>
+				<div className="mb-6 grid grid-cols-2 gap-4 md:grid-cols-4">
+					<LogCard
+						frontContent={["QSD", "okoko", "AHAH"]}
+						backContent={["zzzz", "euh", "ah c le back"]}
+						className="bg-red-200"
+					/>
+					<LogCard
+						frontContent={["QSD", "okoko", "AHAH"]}
+						backContent={["zzzz", "euh", "ah c le back"]}
+					/>
+					<LogCard
+						frontContent={["QSD", "okoko", "AHAH"]}
+						backContent={["zzzz", "euh", "ah c le back"]}
+					/>
 				</div>
 			</Section>
 

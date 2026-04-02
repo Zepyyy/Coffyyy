@@ -10,15 +10,16 @@ import { addBrew } from "@/db/crud/add";
 import { db } from "@/db/db";
 import { buildBrewSuggestions } from "@/lib/brewSuggestions";
 import { validateRequiredFields } from "@/lib/formValidation";
+import { cn } from "@/lib/utils";
 import type { BeanCardProps } from "@/types/BeanTypes";
 import type { BrewForm } from "@/types/BrewTypes";
 
 const INITIAL: BrewForm = {
-	bean: undefined,
+	bean: "",
 	date: new Date(),
 	overallRating: "",
 	grindSize: "",
-	machine: undefined,
+	machine: "",
 	beanWeight: 18,
 	espressoWeight: 36,
 	flow: "",
@@ -71,6 +72,12 @@ const STEPS: Step[] = [
 		title: "Notes",
 		information: ["Notes"],
 		description: "Any additional notes or observations.",
+	},
+	{
+		step: 4,
+		title: "Summary",
+		information: [],
+		description: "Summary of the brew.",
 	},
 ];
 
@@ -222,10 +229,9 @@ export default function BrewLog() {
 	const espressoRatio = form.beanWeight
 		? (form.espressoWeight / form.beanWeight).toFixed(1)
 		: null;
-
 	return (
 		<div className="mx-auto w-full">
-			<div className="grid gap-6 lg:grid-cols-[24rem_minmax(0,1fr)] lg:gap-8">
+			<div className="grid lg:grid-cols-[16rem_minmax(0,1fr)] mx-6">
 				<aside className="lg:sticky lg:top-20 lg:self-start max-w-fit lg:block hidden">
 					<div className="space-y-5 p-2 backdrop-blur-xs lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto">
 						<div className="border-l-5 border-primary-200 pl-5">
@@ -262,7 +268,7 @@ export default function BrewLog() {
 						{error && <p className="text-sm text-foreground py-1">{error}</p>}
 					</div>
 				</aside>
-				<section className="space-y-5 border border-border bg-background p-6">
+				<section className="space-y-5 border border-border bg-background p-6 mx-12">
 					<form onSubmit={handleSubmit} className="space-y-10">
 						{/* Bean */}
 						{/* Step indicator */}
@@ -278,10 +284,10 @@ export default function BrewLog() {
 							{step === 1 && (
 								<section className="space-y-3">
 									<SectionTitle>{STEPS[step - 1].title}</SectionTitle>
-									<div className="space-y-4">
-										<div className="space-y-2">
+									<div className="space-y-12">
+										<div className="space-y-12">
 											<FieldLabel required>The bean</FieldLabel>
-											<div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+											<div className="grid grid-cols-4 gap-2 sm:grid-cols-6">
 												{suggestions.bean.map((beanInfo) => (
 													<QuickCard
 														key={beanInfo.name}
@@ -296,8 +302,18 @@ export default function BrewLog() {
 												))}
 											</div>
 										</div>
-										<div className="grid grid-cols-1 sm:grid-cols-2 max-w-1/2 space-y-4">
-											<div className="space-y-4">
+									</div>
+								</section>
+							)}
+						</div>
+						<div
+							className={`transition-opacity duration-300 space-y-4 ${step === 2 ? "opacity-100" : "opacity-0"}`}
+						>
+							{step === 2 && (
+								<section className="space-y-4">
+									<div className="flex flex-col items-center justify-center">
+										<div className="flex flex-row items-center justify-around gap-x-32">
+											<div className="flex flex-col items-center">
 												<FieldLabel required>Bean Weight</FieldLabel>
 												<Dial
 													value={beanWeightValue}
@@ -306,7 +322,15 @@ export default function BrewLog() {
 													max={MAX_BEAN_WEIGHT}
 												/>
 											</div>
-											<div className="space-y-4">
+											{espressoRatio && (
+												<div className="text-7xl w-36 text-center font-Lora font-bold px-6 py-3.5 rounded border border-primary-200/75 bg-primary-200/15 relative">
+													{espressoRatio}
+													<span className="absolute -bottom-5 left-2 text-xs font-Mono font-medium text-muted-foreground/70 tracking-widest uppercase select-none">
+														ratio
+													</span>
+												</div>
+											)}
+											<div className="flex flex-col items-center">
 												<FieldLabel required>Espresso Weight</FieldLabel>
 												<Dial
 													value={espressoWeightValue}
@@ -316,24 +340,19 @@ export default function BrewLog() {
 												/>
 											</div>
 										</div>
-										{espressoRatio && (
-											<p className="text-sm text-muted-foreground">
-												Ratio: {espressoRatio}
-											</p>
-										)}
-										<div className="space-y-2">
-											<FieldLabel required>Extraction Time</FieldLabel>
-											<input
-												type="number"
-												className="flex-1 w-full border border-border bg-background px-3 py-1.5 font-Recursive text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/40 rounded-none"
-												step="0.01"
-												placeholder="e.g. 18"
-												value={form.extractionTime}
-												onChange={(e) =>
-													setField("extractionTime", e.target.value)
-												}
-											/>
-										</div>
+									</div>
+									<div className="space-y-2">
+										<FieldLabel required>Extraction Time</FieldLabel>
+										<input
+											type="number"
+											className="flex-1 w-full border border-border bg-background px-3 py-1.5 font-Recursive text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/40 rounded-none"
+											step="0.01"
+											placeholder="e.g. 18"
+											value={form.extractionTime}
+											onChange={(e) =>
+												setField("extractionTime", e.target.value)
+											}
+										/>
 										<div className="space-y-2">
 											<FieldLabel required>Grind Size</FieldLabel>
 											<input
@@ -358,20 +377,11 @@ export default function BrewLog() {
 							)}
 						</div>
 						<div
-							className={`transition-opacity duration-500 space-y-4 ${step === 2 ? "opacity-100" : "opacity-0"}`}
+							className={`transition-opacity duration-500 space-y-4 ${step === 3 ? "opacity-100" : "opacity-0"}`}
 						>
-							{step === 2 && (
+							{step === 3 && (
 								<section className="space-y-4">
 									<SectionTitle>{STEPS[step - 1].title}</SectionTitle>
-									<div className="space-y-1.5">
-										<FieldLabel>Machine</FieldLabel>
-										<OptionChips
-											options={suggestions.machine.map((m) => m)}
-											value={form.machine ?? ""}
-											onChange={(v) => setField("machine", v)}
-										/>
-									</div>
-
 									<div className="space-y-1.5">
 										<FieldLabel required>Overall rating</FieldLabel>
 										<OptionChips
@@ -381,16 +391,60 @@ export default function BrewLog() {
 											requiredField={fieldErrors.overallRating}
 										/>
 									</div>
+									<div className="space-y-1.5">
+										<FieldLabel>Machine</FieldLabel>
+										<OptionChips
+											options={suggestions.machine.map((m) => m)}
+											value={form.machine ?? ""}
+											onChange={(v) => setField("machine", v)}
+										/>
+									</div>
 								</section>
 							)}
 						</div>
 						<div
-							className={`transition-opacity duration-200 space-y-4 ${step === 3 ? "opacity-100" : "opacity-0"}`}
+							className={`transition-opacity duration-200 space-y-4 ${step === 4 ? "opacity-100" : "opacity-0"}`}
 						>
-							{step === 3 && (
+							{step === 4 && (
 								<>
-									<div>qsdqsd</div>
-									<div className="space-y-3 border-t border-border pt-4">
+									<SectionTitle>Summary</SectionTitle>
+									<div className="flex justify-center">
+										<div className="grid grid-cols-3 gap-4 max-w-1/2">
+											{Object.entries(form).map(([key, value]) => (
+												<div
+													className={
+														"flex bg-primary-200/15 rounded min-w-fit p-4 items-center justify-center text-2xl aspect-square hover:bg-primary-200/30 relative"
+													}
+													key={key}
+												>
+													{/* Title */}
+													<span
+														className={cn(
+															"absolute top-2 left-5 text-xl text-primary font-bold font-Alan underline decoration-2 decoration-dotted mb-1",
+															key === "espressoWeight" ? "" : "",
+														)}
+													>
+														{key}
+													</span>
+
+													{/* Value */}
+													<span
+														className={cn(
+															"font-mono text-foreground",
+															key === "bean" ? "" : "",
+															key === "" ? "" : "",
+														)}
+													>
+														{Array.isArray(value)
+															? value.join(", ")
+															: value?.toLocaleString()}
+													</span>
+												</div>
+											))}
+										</div>
+									</div>
+
+									<div className="border-t border-border pt-4">
 										{status && (
 											<p className="text-sm text-muted-foreground">{status}</p>
 										)}
