@@ -1,8 +1,8 @@
 import type { BeanCardProps } from "./BeanTypes";
+import type { MachineCardProps } from "./MachineTypes";
 
 export type Brews = {
 	id: number;
-	bean: string | undefined;
 	beanWeight: number;
 	espressoWeight: number;
 	extractionTime: string | undefined;
@@ -10,11 +10,13 @@ export type Brews = {
 	overallRating: number;
 	grindSize: string;
 	date: Date;
-	machine: string | undefined;
+	beanId: number | undefined;
+	machineId: number | undefined;
 };
 
 export type BrewForm = {
-	bean: string;
+	beanId: number | undefined;
+	machineId: number | undefined;
 	beanWeight: number;
 	espressoWeight: number;
 	extractionTime: string;
@@ -22,10 +24,9 @@ export type BrewForm = {
 	overallRating: "Excellent" | "Good" | "Mid" | "Horrible" | "Burnt" | "";
 	grindSize: string;
 	date: Date;
-	machine: string;
 };
 
 export type BrewSuggestions = {
 	bean: Array<BeanCardProps>;
-	machine: Array<string>;
+	machine: Array<MachineCardProps>;
 };

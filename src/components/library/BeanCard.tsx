@@ -11,7 +11,7 @@ import {
 	Salad,
 } from "lucide-react";
 import { useState } from "react";
-import { deleteBean } from "@/db/crud/delete";
+import { deleteBeanById } from "@/db/crud/delete";
 import { colorSwatch } from "@/lib/utils";
 import type { Beans } from "@/types/BeanTypes";
 import { Separator } from "../ui/separator";
@@ -67,7 +67,6 @@ interface Parameter {
 export default function BeanCard({ bean }: { bean: Beans }) {
 	const [confirmDelete, setConfirmDelete] = useState(false);
 	const NoteIcon = noteBadge[bean.dominantNote]?.icon ?? FileQuestion;
-	const tastingNotes = bean.tastingNotes.join(", ");
 
 	const parameters: Parameter[] = [
 		{ label: "Variety", values: bean.variety },
@@ -132,8 +131,7 @@ export default function BeanCard({ bean }: { bean: Beans }) {
 							WebkitLineClamp: 3,
 						}}
 					>
-						{/*{bean.flavors}*/}
-						{tastingNotes}
+						{bean.flavors.join(", ")}
 					</span>
 				</article>
 				<div className="mt-auto flex justify-end pt-4">
@@ -149,7 +147,7 @@ export default function BeanCard({ bean }: { bean: Beans }) {
 							</button>
 							<button
 								type="button"
-								onClick={() => deleteBean(bean.id)}
+								onClick={() => deleteBeanById(bean.id)}
 								className="px-3 py-1 rounded-lg bg-destructive text-destructive-foreground text-xs font-medium hover:opacity-90 transition-opacity"
 							>
 								Delete

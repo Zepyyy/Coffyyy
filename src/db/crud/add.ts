@@ -3,7 +3,7 @@ import type { Beans } from "@/types/BeanTypes";
 import type { Brews } from "@/types/BrewTypes";
 import type { Machines } from "@/types/MachineTypes";
 import { db } from "../db";
-import { getRandomBean, getRandomMachine } from "./get";
+import { getRandomBeanId, getRandomMachineId } from "./get";
 
 async function addBean(bean: Omit<Beans, "id">) {
 	try {
@@ -111,19 +111,19 @@ async function addBrew(brew: Omit<Brews, "id">) {
 }
 
 async function addRandomBrew() {
-	console.log(await getRandomBean(), await getRandomMachine());
-	if ((await getRandomBean()) === undefined) {
+	if ((await getRandomBeanId()) === undefined) {
 		console.log("No bean found");
 		return;
 	}
-	if ((await getRandomMachine()) === undefined) {
+	if ((await getRandomMachineId()) === undefined) {
 		console.log("No machine found");
 		return;
 	}
 	try {
 		return await db.Brews.bulkAdd([
 			{
-				bean: await getRandomBean(),
+				beanId: await getRandomBeanId(),
+				machineId: await getRandomMachineId(),
 				date: new Date(),
 				overallRating: SelectRandom([1, 2, 3, 4, 5]),
 				grindSize: SelectRandom(["fine", "medium", "coarse"]),
@@ -140,7 +140,6 @@ async function addRandomBrew() {
 					"90s",
 					"100s",
 				]),
-				machine: await getRandomMachine(),
 			} as Omit<Brews, "id">,
 		]);
 	} catch (error) {

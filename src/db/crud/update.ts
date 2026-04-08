@@ -34,4 +34,4 @@ async function updateBrewById(brew: Partial<Brews>, id: number) {
 	}
 }
 
-export { updateBeanByName, updateBeanById, updateBrewByName, updateBrewById };
+export { updateBeanById, updateBeanByName, updateBrewById, updateBrewByName };

@@ -7,14 +7,14 @@ import MachineCard from "@/components/library/MachineCard";
 import { Button } from "@/components/ui/button";
 import { addRandomBean, addRandomMachine } from "@/db/crud/add";
 import {
-	useGetAllBeans,
-	useGetBeanCount,
-	useGetBeanFilters,
+	useAllBeans,
+	useBeanCount,
+	useBeanFilters,
 } from "@/hooks/api/useBeans";
 import {
-	useGetAllMachines,
-	useGetMachineCount,
-	useGetMachineFilters,
+	useAllMachines,
+	useMachineCount,
+	useMachineFilters,
 } from "@/hooks/api/useMachines";
 import { cn } from "@/lib/utils";
 import type { BeanFilters } from "@/types/BeanTypes";
@@ -29,12 +29,12 @@ export default function Library() {
 	const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
 	const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
 
-	const beanFilters = useGetBeanFilters();
-	const machineFilters = useGetMachineFilters();
-	const beansCount = useGetBeanCount();
-	const machinesCount = useGetMachineCount();
-	const allBeans = useGetAllBeans();
-	const allMachines = useGetAllMachines();
+	const beanFilters = useBeanFilters();
+	const machineFilters = useMachineFilters();
+	const beansCount = useBeanCount();
+	const machinesCount = useMachineCount();
+	const allBeans = useAllBeans();
+	const allMachines = useAllMachines();
 
 	const originCounts = useMemo(() => {
 		const counts = new Map<string, number>();

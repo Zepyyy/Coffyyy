@@ -1,10 +1,5 @@
 import { db } from "@/db/db";
-import type {
-	BeanDisplay,
-	BeanFilters,
-	BeanSuggestions,
-	Beans,
-} from "@/types/BeanTypes";
+import type { BeanFilters, BeanSuggestions, Beans } from "@/types/BeanTypes";
 import { uniqueSorted } from "./utils";
 
 export async function getAllBeans(): Promise<Array<Beans>> {
@@ -19,6 +14,14 @@ export async function getAllBeanNames(): Promise<Array<Beans["name"]>> {
 	return db.Beans.toArray().then((beans) => beans.map((b) => b.name));
 }
 
+export async function getBeanDominantNote(
+	beanId: number | undefined,
+): Promise<Beans["dominantNote"] | undefined> {
+	if (!beanId) return undefined;
+	const bean = await db.Beans.get(beanId);
+	return bean?.dominantNote;
+}
+
 export async function getBeanFilters(): Promise<Array<BeanFilters>> {
 	const beans = await db.Beans.toArray();
 	return beans.map((b) => {
@@ -28,13 +31,6 @@ export async function getBeanFilters(): Promise<Array<BeanFilters>> {
 			roastLevel: b.roastLevel,
 			process: b.process,
 		};
-	});
-}
-
-export async function getBeanDisplays(): Promise<Array<BeanDisplay>> {
-	const beans = await db.Beans.toArray();
-	return beans.map((b) => {
-		return { name: b.name, id: b.id, dominantNote: b.dominantNote };
 	});
 }
 
@@ -58,6 +54,5 @@ export async function getBeanSuggestions(): Promise<BeanSuggestions> {
 		processes: uniqueSorted(extractArray("process")),
 		varieties: uniqueSorted(extractArray("variety")),
 		flavors: uniqueSorted(extractArray("flavors")),
-		tastingNotes: uniqueSorted(extractArray("tastingNotes")),
 	};
 }

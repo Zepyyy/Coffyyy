@@ -1,19 +1,19 @@
 import { useLiveQuery } from "dexie-react-hooks";
 import * as machineStatsApi from "../../lib/api/machines";
 
-export const useGetAllMachines = () => {
+export const useAllMachines = () => {
 	return useLiveQuery(() => machineStatsApi.getAllMachines(), []) ?? [];
 };
 
-export const useGetMachineFilters = () => {
+export const useMachineFilters = () => {
 	return useLiveQuery(() => machineStatsApi.getMachineFilters(), []) ?? [];
 };
 
-export const useGetMachineCount = () => {
+export const useMachineCount = () => {
 	return useLiveQuery(() => machineStatsApi.getMachineCount(), []) ?? 0;
 };
 
-export const useGetMachineSuggestions = () => {
+export const useMachineSuggestions = () => {
 	return (
 		useLiveQuery(() => machineStatsApi.getMachineSuggestions(), []) ?? {
 			names: [""],

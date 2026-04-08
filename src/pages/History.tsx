@@ -1,12 +1,11 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router";
 import { BrewHistoryRow } from "@/components/history/BrewHistoryRow";
 import { Button } from "@/components/ui/button";
 import { addRandomBrew } from "@/db/crud/add";
-import { useGetBeanDisplays } from "@/hooks/api/useBeans";
 import { useHistoryBrews, useHistoryStats } from "@/hooks/api/useBrews";
 import type { HistorySortMode } from "@/lib/api/brews";
-import { cn, colorSwatch } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 
 const SORT_OPTIONS: Array<{ value: HistorySortMode; label: string }> = [
 	{ value: "newest", label: "Newest first" },
@@ -32,7 +31,7 @@ function HistoryListSkeleton() {
 			{[1, 2, 3, 4, 5].map((i) => (
 				<div
 					key={i}
-					className="h-[4.25rem] animate-pulse rounded border border-border bg-muted/40"
+					className="h-17 animate-pulse rounded border border-border bg-muted/40"
 				/>
 			))}
 		</div>
@@ -47,15 +46,8 @@ export default function History() {
 	const minRating = ratingFilter === "all" ? null : ratingFilter;
 	const brews = useHistoryBrews(sortMode, search, minRating);
 	const stats = useHistoryStats();
-	const beanDisplays = useGetBeanDisplays();
 
-	const beanMap = useMemo(
-		() => new Map(beanDisplays.map((b) => [b.name, b])),
-		[beanDisplays],
-	);
-
-	const hasActiveFilters =
-		search.trim().length > 0 || ratingFilter !== "all";
+	const hasActiveFilters = search.trim().length > 0 || ratingFilter !== "all";
 
 	function clearFilters() {
 		setSearch("");
@@ -79,15 +71,11 @@ export default function History() {
 							{[
 								{
 									label: "Total brews",
-									value:
-										stats != null ? String(stats.total) : "…",
+									value: stats != null ? String(stats.total) : "…",
 								},
 								{
 									label: "Unique beans",
-									value:
-										stats != null
-											? String(stats.uniqueBeans)
-											: "…",
+									value: stats != null ? String(stats.uniqueBeans) : "…",
 								},
 								{
 									label: "Avg rating",
@@ -100,17 +88,11 @@ export default function History() {
 								},
 								{
 									label: "Last 7 days",
-									value:
-										stats != null
-											? String(stats.last7Days)
-											: "…",
+									value: stats != null ? String(stats.last7Days) : "…",
 								},
 								{
 									label: "Top machine",
-									value:
-										stats != null
-											? (stats.topMachine ?? "—")
-											: "…",
+									value: stats != null ? (stats.topMachine ?? "—") : "…",
 									className: "col-span-2 lg:col-span-1",
 								},
 							].map(({ label, value, className }) => (
@@ -171,9 +153,7 @@ export default function History() {
 						<select
 							className="h-10 rounded-lg border border-border/70 bg-background px-3 text-sm text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring"
 							value={sortMode}
-							onChange={(e) =>
-								setSortMode(e.target.value as HistorySortMode)
-							}
+							onChange={(e) => setSortMode(e.target.value as HistorySortMode)}
 							aria-label="Sort brews"
 						>
 							{SORT_OPTIONS.map((o) => (
@@ -228,20 +208,13 @@ export default function History() {
 
 					{brews !== undefined && brews.length > 0 && (
 						<div className="space-y-2">
-							{brews.map((brew) => {
-								const bean = brew.bean ? beanMap.get(brew.bean) : undefined;
-								const swatch = bean?.dominantNote
-									? colorSwatch[bean.dominantNote]
-									: null;
-								const dotBg = swatch?.bg ?? "bg-muted";
-								return (
-									<BrewHistoryRow
-										key={brew.id}
-										brew={brew}
-										dotBgClass={dotBg}
-									/>
-								);
-							})}
+							{brews.map((brew) => (
+								<BrewHistoryRow
+									key={brew.id}
+									brew={brew}
+									dotBgClass={"bg-muted"}
+								/>
+							))}
 						</div>
 					)}
 				</section>

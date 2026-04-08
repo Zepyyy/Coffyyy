@@ -2,22 +2,23 @@ import { type ChangeEvent, useState } from "react";
 import Dial from "@/components/log/Dial";
 import FieldLabel from "@/components/log/FieldLabel";
 import OptionChips from "@/components/log/OptionChips";
-import QuickCard from "@/components/log/QuickCard";
+import QuickCard from "@/components/log/QuickBeanCard";
+import QuickMachineCard from "@/components/log/QuickMachineCard";
 import SectionDescription from "@/components/log/SectionDescription";
 import SectionTitle from "@/components/log/SectionTitle";
 import { addBrew } from "@/db/crud/add";
-import { useGetBrewSuggestions } from "@/hooks/api/useBrews";
+import { useBrewSuggestions } from "@/hooks/api/useBrews";
 import { DEFAULT_FLOW, DEFAULT_OVERALL_RATING } from "@/lib/defaults";
 import { validateRequiredFields } from "@/lib/formValidation";
 import { cn } from "@/lib/utils";
 import type { BrewForm } from "@/types/BrewTypes";
 
 const INITIAL: BrewForm = {
-	bean: "",
+	beanId: undefined,
+	machineId: undefined,
 	date: new Date(),
 	overallRating: "",
 	grindSize: "",
-	machine: "",
 	beanWeight: 18,
 	espressoWeight: 36,
 	flow: "",
@@ -127,7 +128,7 @@ export default function BrewLog() {
 
 	const [step, setStep] = useState(1);
 
-	const suggestions = useGetBrewSuggestions();
+	const suggestions = useBrewSuggestions();
 
 	function setField<K extends keyof BrewForm>(field: K, value: BrewForm[K]) {
 		setForm((f) => ({ ...f, [field]: value }));
@@ -159,12 +160,12 @@ export default function BrewLog() {
 		setIsSaving(true);
 		try {
 			const result = await addBrew({
-				bean: form.bean,
+				beanId: form.beanId,
+				machineId: form.machineId,
 				date: form.date,
 				beanWeight: form.beanWeight,
 				overallRating: overallRatingToNumber(form.overallRating),
 				grindSize: form.grindSize,
-				machine: form.machine,
 				espressoWeight: form.espressoWeight,
 				flow: form.flow,
 				extractionTime: form.extractionTime,
@@ -215,7 +216,10 @@ export default function BrewLog() {
 		? (form.espressoWeight / form.beanWeight).toFixed(1)
 		: null;
 
-	const [selectedBean, setSelectedBean] = useState<string | null>(null);
+	const [selectedBeanId, setSelectedBeanId] = useState<number | null>(null);
+	const [selectedMachineId, setSelectedMachineId] = useState<number | null>(
+		null,
+	);
 	return (
 		<div className="mx-auto w-full">
 			<div className="grid lg:grid-cols-[16rem_minmax(0,1fr)] mx-6">
@@ -278,15 +282,16 @@ export default function BrewLog() {
 												{suggestions.bean.map((beanInfo) => (
 													<QuickCard
 														key={beanInfo.name}
-														selected={selectedBean === beanInfo.name}
+														selected={selectedBeanId === beanInfo.id}
 														bean={{
+															id: beanInfo.id,
 															name: beanInfo.name,
 															origin: beanInfo.origin,
 															dominantNote: beanInfo.dominantNote,
 														}}
 														onClick={() => {
-															setField("bean", beanInfo.name);
-															setSelectedBean(beanInfo.name);
+															setField("beanId", beanInfo.id);
+															setSelectedBeanId(beanInfo.id);
 														}}
 													/>
 												))}
@@ -387,12 +392,24 @@ export default function BrewLog() {
 										/>
 									</div>
 									<div className="space-y-1.5">
-										<FieldLabel>Machine</FieldLabel>
-										<OptionChips
-											options={suggestions.machine.map((m) => m)}
-											value={form.machine ?? ""}
-											onChange={(v) => setField("machine", v)}
-										/>
+										<FieldLabel required>Machine</FieldLabel>
+										<div className="grid grid-cols-4 gap-2 sm:grid-cols-6">
+											{suggestions.machine.map((machineInfo) => (
+												<QuickMachineCard
+													key={machineInfo.id}
+													selected={selectedMachineId === machineInfo.id}
+													machine={{
+														id: machineInfo.id,
+														name: machineInfo.name,
+														type: machineInfo.type,
+													}}
+													onClick={() => {
+														setField("machineId", machineInfo.id);
+														setSelectedMachineId(machineInfo.id);
+													}}
+												/>
+											))}
+										</div>
 									</div>
 								</section>
 							)}
@@ -445,7 +462,7 @@ export default function BrewLog() {
 										)}
 										<button
 											type="submit"
-											disabled={!form.bean || isSaving}
+											disabled={!form.beanId || isSaving}
 											className="w-full h-12 rounded-xl bg-foreground text-background font-semibold text-sm transition-opacity disabled:opacity-40 hover:opacity-90"
 										>
 											{isSaving ? "Saving…" : "Save Brew"}

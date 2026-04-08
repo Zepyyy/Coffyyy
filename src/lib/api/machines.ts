@@ -14,6 +14,13 @@ export async function getMachineCount(): Promise<number> {
 	return db.Machines.count();
 }
 
+export async function getMachineNameById(
+	id: number,
+): Promise<string | undefined> {
+	const machine = await db.Machines.get(id);
+	return machine?.name;
+}
+
 export async function getAllMachineNames(): Promise<Array<Machines["name"]>> {
 	return db.Machines.toArray().then((machines) => machines.map((m) => m.name));
 }

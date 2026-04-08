@@ -1,33 +1,38 @@
 import { useLiveQuery } from "dexie-react-hooks";
 import * as beanStatsApi from "@/lib/api/beans";
 
-export const useGetAllBeans = () => {
+export const useAllBeans = () => {
 	return useLiveQuery(() => beanStatsApi.getAllBeans(), []) ?? [];
 };
 
-export const useGetBeanFilters = () => {
+export const useAllBeanNames = () => {
+	return useLiveQuery(() => beanStatsApi.getAllBeanNames(), []) ?? [];
+};
+
+export const useBeanFilters = () => {
 	return useLiveQuery(() => beanStatsApi.getBeanFilters(), []) ?? [];
 };
 
-export const useGetBeanDisplays = () => {
-	return useLiveQuery(() => beanStatsApi.getBeanDisplays(), []) ?? [];
-};
-
-export const useGetBeanCount = () => {
+export const useBeanCount = () => {
 	return useLiveQuery(() => beanStatsApi.getBeanCount(), []) ?? 0;
 };
 
-export const useGetBeanSuggestions = () => {
+export const useBeanDominantNote = (beanId: number | undefined) => {
+	return (
+		useLiveQuery(() => beanStatsApi.getBeanDominantNote(beanId), []) ??
+		undefined
+	);
+};
+export const useBeanSuggestions = () => {
 	return (
 		useLiveQuery(() => beanStatsApi.getBeanSuggestions(), []) ?? {
 			botanics: [""],
 			designations: [""],
 			dominantNotes: [""],
 			brands: [""],
-			flavors: [""],
 			origins: [""],
 			processes: [""],
-			tastingNotes: [""],
+			flavors: [""],
 			varieties: [""],
 		}
 	);

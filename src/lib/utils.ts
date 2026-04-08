@@ -6,7 +6,8 @@ export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));
 }
 
-type Note = Beans["dominantNote"];
+type Note = Beans["dominantNote"] | "default";
+
 type Swatch = {
 	bg: string;
 	stripe: string;
@@ -71,6 +72,13 @@ export const colorSwatch: Record<Note, Swatch> = {
 		text: "text-tag-yellow-100",
 		secondaryText: "text-tag-yellow-100/75",
 		border: "border border-tag-yellow-500",
+	},
+	default: {
+		bg: "bg-tag-gray-900",
+		stripe: "bg-tag-gray-500",
+		text: "text-tag-gray-100",
+		secondaryText: "text-tag-gray-100/75",
+		border: "border border-tag-gray-500",
 	},
 };
 

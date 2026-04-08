@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import {
 	AlertCircle,
 	Check,
@@ -18,7 +20,7 @@ import FilterCard from "@/components/library/FilterCard";
 import MachineCard from "@/components/library/MachineCard";
 import Dial from "@/components/log/Dial";
 import LogCard from "@/components/log/LogCard";
-import QuickCard from "@/components/log/QuickCard";
+import QuickCard from "@/components/log/QuickBeanCard";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import Tag from "@/components/ui/tag";

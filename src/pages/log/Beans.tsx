@@ -5,7 +5,7 @@ import OptionChips from "@/components/log/OptionChips";
 import SectionTitle from "@/components/log/SectionTitle";
 import SingleChoiceChips from "@/components/log/SingleChoiceChips";
 import { addBean } from "@/db/crud/add";
-import { useGetBeanSuggestions } from "@/hooks/api/useBeans";
+import { useBeanSuggestions } from "@/hooks/api/useBeans";
 import {
 	DEFAULT_BOTANICS,
 	DEFAULT_DESIGNATIONS,
@@ -26,7 +26,6 @@ const INITIAL: BeanForm = {
 	variety: [],
 	dominantNote: "",
 	flavors: [],
-	tastingNotes: [],
 };
 
 const SAVE_MESSAGES = [
@@ -52,7 +51,6 @@ export default function BeansLog() {
 	const [customOrigin, setCustomOrigin] = useState("");
 	const [customVariety, setCustomVariety] = useState("");
 	const [customFlavor, setCustomFlavor] = useState("");
-	const [customNote, setCustomNote] = useState("");
 	const [customProcess, setCustomProcess] = useState("");
 	const [customBrand, setCustomBrand] = useState("");
 	const [error, setError] = useState("");
@@ -63,7 +61,7 @@ export default function BeansLog() {
 	const [status, setStatus] = useState("");
 	const [isSaving, setIsSaving] = useState(false);
 
-	const suggestions = useGetBeanSuggestions();
+	const suggestions = useBeanSuggestions();
 
 	function clearFieldError(field: keyof BeanForm) {
 		setFieldErrors((prev) => {
@@ -80,7 +78,7 @@ export default function BeansLog() {
 	}
 
 	function toggleItem(
-		field: "process" | "origin" | "variety" | "flavors" | "tastingNotes",
+		field: "process" | "origin" | "variety" | "flavors",
 		value: string,
 	) {
 		setForm((f) => {
@@ -100,7 +98,7 @@ export default function BeansLog() {
 	}
 
 	function addCustom(
-		field: "process" | "origin" | "variety" | "flavors" | "tastingNotes",
+		field: "process" | "origin" | "variety" | "flavors",
 		value: string,
 		clearFn: () => void,
 	) {
@@ -149,7 +147,6 @@ export default function BeansLog() {
 					| "Roasted"
 					| "Green",
 				flavors: form.flavors,
-				tastingNotes: form.tastingNotes,
 				finished: false,
 			});
 			setError(result instanceof Error ? result.message : String(result));
@@ -388,23 +385,6 @@ export default function BeansLog() {
 									}
 									placeholder="e.g. Blueberry, Dark chocolate…"
 									requiredField={fieldErrors.flavors}
-								/>
-							</div>
-
-							<div className="space-y-1.5">
-								<FieldLabel>Tasting notes</FieldLabel>
-								<MultiChips
-									suggestions={suggestions.tastingNotes}
-									selected={form.tastingNotes}
-									onToggle={(v) => toggleItem("tastingNotes", v)}
-									customInput={customNote}
-									onCustomChange={setCustomNote}
-									onCustomAdd={() =>
-										addCustom("tastingNotes", customNote, () =>
-											setCustomNote(""),
-										)
-									}
-									placeholder="More descriptive impressions…"
 								/>
 							</div>
 						</section>

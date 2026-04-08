@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { deleteMachine } from "@/db/crud/delete";
+import { deleteMachineById } from "@/db/crud/delete";
 import type { Machines } from "@/types/MachineTypes";
 import { Separator } from "../ui/separator";
 import Tag from "../ui/tag";
@@ -60,7 +60,8 @@ export default function MachineCard({ machine }: { machine: Machines }) {
 						<button
 							type="button"
 							onClick={() => {
-								if (typeof machine.id === "number") deleteMachine(machine.id);
+								if (typeof machine.id === "number")
+									deleteMachineById(machine.id);
 							}}
 							className="px-3 py-1 rounded-lg bg-destructive text-destructive-foreground text-xs font-medium hover:opacity-90 transition-opacity"
 						>

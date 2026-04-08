@@ -8,7 +8,6 @@ function formatDate(date: Date | string | undefined): string {
 	if (!date) return "—";
 	try {
 		return new Date(date).toLocaleDateString(undefined, {
-			month: "short",
 			day: "numeric",
 			year: "numeric",
 		});
@@ -30,9 +29,7 @@ function RatingStars({ value }: { value: number }) {
 					key={i}
 					className={cn(
 						"size-3.5",
-						i < n
-							? "fill-primary text-primary"
-							: "text-muted-foreground/25",
+						i < n ? "fill-primary text-primary" : "text-muted-foreground/25",
 					)}
 				/>
 			))}
@@ -57,7 +54,7 @@ export function BrewHistoryRow({
 			: null;
 
 	const metaLine = [
-		brew.machine,
+		brew.machineId,
 		brew.grindSize && `Grind ${brew.grindSize}`,
 		ratio && `1:${ratio}`,
 		brew.extractionTime,
@@ -95,7 +92,7 @@ export function BrewHistoryRow({
 				</div>
 				<div className="min-w-0 flex-1">
 					<p className="truncate font-Recursive text-sm font-medium">
-						{brew.bean ?? "Unknown bean"}
+						{brew.beanId ?? "Unknown bean"}
 					</p>
 					<p className="truncate font-Mono text-[10px] uppercase tracking-widest text-muted-foreground">
 						{metaLine || "—"}
@@ -118,7 +115,10 @@ export function BrewHistoryRow({
 				<div className="space-y-3 border-t border-border/70 px-4 py-3">
 					<div className="grid grid-cols-2 gap-x-6 gap-y-1.5 text-sm sm:grid-cols-3">
 						{[
-							["Bean dose", brew.beanWeight != null ? `${brew.beanWeight} g` : null],
+							[
+								"Bean dose",
+								brew.beanWeight != null ? `${brew.beanWeight} g` : null,
+							],
 							[
 								"Espresso out",
 								brew.espressoWeight != null ? `${brew.espressoWeight} g` : null,
@@ -127,7 +127,8 @@ export function BrewHistoryRow({
 							["Grind", brew.grindSize || null],
 							["Extraction", brew.extractionTime || null],
 							["Flow", brew.flow || null],
-							["Machine", brew.machine || null],
+							["Rating", brew.overallRating || null],
+							["Machine", brew.machineId || null],
 							["Date", formatDate(brew.date)],
 						]
 							.filter(([, v]) => v)
@@ -142,7 +143,9 @@ export function BrewHistoryRow({
 					<div className="flex flex-wrap items-center justify-end gap-2 pt-1">
 						{confirmDelete ? (
 							<>
-								<span className="text-xs text-muted-foreground">Delete this brew?</span>
+								<span className="text-xs text-muted-foreground">
+									Delete this brew?
+								</span>
 								<button
 									type="button"
 									onClick={handleDelete}

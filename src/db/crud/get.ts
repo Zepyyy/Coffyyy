@@ -3,14 +3,14 @@ import type { Beans } from "@/types/BeanTypes";
 import type { Machines } from "@/types/MachineTypes";
 import { db } from "../db";
 
-async function getRandomBean(): Promise<Beans["name"] | undefined> {
+async function getRandomBeanId(): Promise<Beans["id"] | undefined> {
 	const beans = await db.Beans.toArray();
-	return SelectRandom(beans.map((bean) => bean.name));
+	return SelectRandom(beans.map((bean) => bean.id));
 }
 
-async function getRandomMachine(): Promise<Machines["name"] | undefined> {
+async function getRandomMachineId(): Promise<Machines["id"] | undefined> {
 	const machines = await db.Machines.toArray();
-	return SelectRandom(machines.map((machine) => machine.name));
+	return SelectRandom(machines.map((machine) => machine.id));
 }
 
-export { getRandomBean, getRandomMachine };
+export { getRandomBeanId, getRandomMachineId };

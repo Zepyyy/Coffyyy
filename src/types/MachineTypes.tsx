@@ -8,6 +8,11 @@ export type Machines = {
 	grindRange: string;
 	capacity: string;
 };
+export type MachineCardProps = {
+	id: number;
+	name: string;
+	type: string;
+};
 
 export type MachineForm = {
 	name: string;

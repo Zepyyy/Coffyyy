@@ -6,7 +6,7 @@ import { cn } from "./lib/utils";
 
 const NAV_LINKS = [
 	{ to: "/home", label: "Home" },
-	{ to: "/designsystem", label: "Design System" },
+	// { to: "/designsystem", label: "Design System" },
 	{ to: "/log", label: "Log" },
 	{ to: "/library", label: "Library" },
 	{ to: "/history", label: "History" },

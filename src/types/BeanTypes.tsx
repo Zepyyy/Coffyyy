@@ -3,7 +3,6 @@ export type Beans = {
 	name: string;
 	rating: number;
 	status: "Excellent" | "Good" | "Mid" | "Horrible" | "New" | "";
-	tastingNotes: string[];
 	dominantNote:
 		| "Fruity"
 		| "Nutty"
@@ -24,6 +23,7 @@ export type Beans = {
 	finished: boolean;
 };
 export type BeanCardProps = {
+	id: number;
 	name: string;
 	origin: string[];
 	dominantNote: Beans["dominantNote"];
@@ -33,7 +33,6 @@ export type BeanCardProps = {
 
 export type MultiTagInputProps = {
 	name: string;
-	tastingNotes: Beans["tastingNotes"];
 };
 
 export type BeanForm = {
@@ -47,7 +46,6 @@ export type BeanForm = {
 	variety: string[];
 	dominantNote: string;
 	flavors: string[];
-	tastingNotes: string[];
 };
 
 export type BeanSuggestions = {
@@ -56,13 +54,6 @@ export type BeanSuggestions = {
 	origins: Array<string>;
 	varieties: Array<string>;
 	flavors: Array<string>;
-	tastingNotes: Array<string>;
-};
-
-export type BeanDisplay = {
-	id: number;
-	name: string;
-	dominantNote: Beans["dominantNote"];
 };
 
 export type BeanFilters = {

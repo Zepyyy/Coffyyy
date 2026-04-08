@@ -1,24 +1,15 @@
 import { BookOpen, Coffee } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router";
-import { useGetBeanDisplays } from "@/hooks/api/useBeans";
-import { useGetRecentBrews } from "@/hooks/api/useBrews";
-import {
-	useBestGrindSize,
-	useBrewCountForBean,
-	useUniqueBeansBrewedCount,
-} from "@/hooks/api/useStats";
-import { cn, colorSwatch } from "@/lib/utils";
+import { useAllBeanNames } from "@/hooks/api/useBeans";
+import { useRecentBrews } from "@/hooks/api/useBrews";
+import { useBrewCountForBean } from "@/hooks/api/useStats";
 
 export default function Home() {
-	const beanDisplays = useGetBeanDisplays();
-	const recentBrews = useGetRecentBrews(5);
-	const uniqueBeans = useUniqueBeansBrewedCount();
-	const bestGrind = useBestGrindSize();
+	const recentBrews = useRecentBrews(5);
+	const allBeanNames = useAllBeanNames();
 	const [selectedBean, setSelectedBean] = useState<string>();
 	const brewCountForSelected = useBrewCountForBean(selectedBean);
-
-	const beanMap = new Map(beanDisplays.map((bean) => [bean.name, bean]));
 
 	return (
 		<div className="w-full mx-auto max-w-5xl px-6 space-y-10">
@@ -70,33 +61,28 @@ export default function Home() {
 
 				{/* Bean selector */}
 				<div className="flex flex-row gap-2">
-					{beanDisplays.map((bean) => (
+					{allBeanNames.map((name) => (
 						<button
 							type="button"
-							key={bean.id}
-							onClick={() => setSelectedBean(bean.name)}
+							key={name}
+							onClick={() => setSelectedBean(name)}
 							className="font-Mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground hover:text-foreground transition-colors p-2 bg-primary-200/25 border border-primary-700 hover:border-transparent hover:bg-primary-700/25 cursor-pointer"
 						>
-							{bean.name}
+							{name}
 						</button>
 					))}
 				</div>
 				<div className="grid grid-cols-2 gap-4 md:grid-cols-4">
 					{[
 						{
-							label: "Grind Size",
-							value: String(bestGrind),
-							sub: "all time",
-						},
-						{
 							label: "brewsForBean",
 							value: String(brewCountForSelected),
 							sub: "in library",
 						},
 						{
-							label: "uniqueBeansBrewedCount",
-							value: String(uniqueBeans),
-							sub: "brewed",
+							label: "brewsForBean",
+							value: String(brewCountForSelected),
+							sub: "in library",
 						},
 					].map(({ label, value, sub }) => (
 						<div
@@ -132,62 +118,6 @@ export default function Home() {
 						>
 							View all →
 						</Link>
-					</div>
-					<div className="space-y-2">
-						{recentBrews?.map((brew) => {
-							const bean = brew.bean ? beanMap.get(brew.bean) : undefined;
-							const swatch = bean?.dominantNote
-								? colorSwatch[bean.dominantNote]
-								: null;
-							const dotColor = swatch?.bg ?? "bg-muted";
-							const ratio =
-								brew.beanWeight && brew.espressoWeight
-									? (brew.espressoWeight / brew.beanWeight).toFixed(1)
-									: null;
-							return (
-								<div
-									key={brew.id}
-									className="group flex items-center gap-4 border border-border bg-background px-4 py-3 transition-colors hover:border-primary/30"
-								>
-									<div
-										className={cn(
-											"size-8 shrink-0 rounded-full flex items-center justify-center",
-											dotColor,
-										)}
-									>
-										<span className="font-News text-xs text-white/90">
-											{brew.overallRating ?? "?"}
-										</span>
-									</div>
-									<div className="min-w-0 flex-1">
-										<p className="truncate font-Recursive text-sm font-medium">
-											{brew.bean ?? "Unknown bean"}
-										</p>
-										<p className="truncate font-Mono text-[10px] uppercase tracking-widest text-muted-foreground">
-											{[
-												brew.machine,
-												brew.grindSize && `Grind ${brew.grindSize}`,
-												ratio && `1:${ratio}`,
-												brew.extractionTime && `${brew.extractionTime}s`,
-											]
-												.filter(Boolean)
-												.join(" · ")}
-										</p>
-									</div>
-									<div className="flex items-center gap-3 shrink-0">
-										<span className="font-Mono text-[10px] uppercase tracking-widest text-muted-foreground hidden sm:block">
-											{brew.overallRating}
-										</span>
-										<span className="font-Mono text-[10px] text-muted-foreground/60">
-											{new Date(brew.date).toLocaleDateString("en-GB", {
-												day: "numeric",
-												month: "short",
-											})}
-										</span>
-									</div>
-								</div>
-							);
-						})}
 					</div>
 				</section>
 			)}

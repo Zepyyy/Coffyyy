@@ -1,17 +1,15 @@
 import { Check } from "lucide-react";
-import { colorSwatch } from "@/lib/utils";
-import type { BeanCardProps } from "@/types/BeanTypes";
+import type { MachineCardProps } from "@/types/MachineTypes";
 
-export default function QuickCard({
-	bean,
+export default function QuickMachineCard({
+	machine,
 	selected,
 	onClick,
 }: {
-	bean: BeanCardProps;
+	machine: MachineCardProps;
 	selected?: boolean;
 	onClick?: () => void;
 }) {
-	const swatch = colorSwatch[bean.dominantNote];
 	return (
 		<button
 			type="button"
@@ -19,13 +17,12 @@ export default function QuickCard({
 			className={`relative overflow-hidden border cursor-pointer transition-colors text-start bg-background ${selected ? " border-primary/40 bg-primary/5 backdrop-blur-xs" : "border-border bg-background hover:border-primary/40"}`}
 			onClick={() => onClick?.()}
 		>
-			<div className={`h-1.5 w-full ${swatch.stripe}`} />
 			<div className="px-2.5 py-2">
 				<p className="font-Lora text-lg font-semibold line-clamp-1 leading-snug">
-					{bean.name}
+					{machine.name}
 				</p>
 				<p className="mt-0.5 font-Mono text-xs uppercase tracking-widest text-muted-foreground">
-					{bean.origin.join(", ")}
+					{machine.type}
 				</p>
 			</div>
 			{selected && (

@@ -1,7 +1,7 @@
 import { db } from "@/db/db";
 import type { BeanCardProps } from "@/types/BeanTypes";
 import type { BrewSuggestions, Brews } from "@/types/BrewTypes";
-import { getAllMachineNames } from "./machines";
+import type { MachineCardProps } from "@/types/MachineTypes";
 
 export type HistorySortMode =
 	| "newest"
@@ -16,7 +16,7 @@ export type HistorySidebarStats = {
 	uniqueBeans: number;
 	avgRating: number | null;
 	last7Days: number;
-	topMachine: string | null;
+	topMachine: number | null;
 };
 
 function sortBrews(list: Brews[], sort: HistorySortMode): Brews[] {
@@ -30,28 +30,16 @@ function sortBrews(list: Brews[], sort: HistorySortMode): Brews[] {
 			sorted.sort((a, b) => dateMs(a.date) - dateMs(b.date));
 			break;
 		case "bean-asc":
-			sorted.sort((a, b) =>
-				(a.bean ?? "").localeCompare(b.bean ?? "", undefined, {
-					sensitivity: "base",
-				}),
-			);
+			sorted.sort((a, b) => (a.beanId ?? 0) - (b.beanId ?? 0));
 			break;
 		case "bean-desc":
-			sorted.sort((a, b) =>
-				(b.bean ?? "").localeCompare(a.bean ?? "", undefined, {
-					sensitivity: "base",
-				}),
-			);
+			sorted.sort((a, b) => (b.beanId ?? 0) - (a.beanId ?? 0));
 			break;
 		case "rating-desc":
-			sorted.sort(
-				(a, b) => (b.overallRating ?? 0) - (a.overallRating ?? 0),
-			);
+			sorted.sort((a, b) => (b.overallRating ?? 0) - (a.overallRating ?? 0));
 			break;
 		case "rating-asc":
-			sorted.sort(
-				(a, b) => (a.overallRating ?? 0) - (b.overallRating ?? 0),
-			);
+			sorted.sort((a, b) => (a.overallRating ?? 0) - (b.overallRating ?? 0));
 			break;
 		default:
 			break;
@@ -74,8 +62,8 @@ export async function getBrewsForHistoryView(
 	if (q) {
 		list = list.filter(
 			(b) =>
-				Boolean(b.bean?.toLowerCase().includes(q)) ||
-				Boolean(b.machine?.toLowerCase().includes(q)),
+				Boolean(b.beanId?.toString().toLowerCase().includes(q)) ||
+				Boolean(b.machineId?.toString().toLowerCase().includes(q)),
 		);
 	}
 	if (minRating !== null) {
@@ -96,7 +84,7 @@ export async function getHistorySidebarStats(): Promise<HistorySidebarStats> {
 		};
 	}
 	const beans = new Set(
-		brews.map((b) => b.bean).filter((n): n is string => Boolean(n)),
+		brews.map((b) => b.beanId).filter((n): n is number => Boolean(n)),
 	);
 	const sum = brews.reduce((s, b) => s + (Number(b.overallRating) || 0), 0);
 	const avg = sum / brews.length;
@@ -106,12 +94,12 @@ export async function getHistorySidebarStats(): Promise<HistorySidebarStats> {
 		(b) => now - +new Date(b.date) <= weekMs,
 	).length;
 
-	const machineCounts = new Map<string, number>();
+	const machineCounts = new Map<number, number>();
 	for (const b of brews) {
-		if (!b.machine) continue;
-		machineCounts.set(b.machine, (machineCounts.get(b.machine) ?? 0) + 1);
+		if (!b.machineId) continue;
+		machineCounts.set(b.machineId, (machineCounts.get(b.machineId) ?? 0) + 1);
 	}
-	let topMachine: string | null = null;
+	let topMachine: number | null = null;
 	let top = 0;
 	for (const [name, count] of machineCounts) {
 		if (count > top) {
@@ -132,6 +120,7 @@ export async function getHistorySidebarStats(): Promise<HistorySidebarStats> {
 export async function getBrewSuggestions(): Promise<BrewSuggestions> {
 	const beans = await db.Beans.toArray().then((b) =>
 		b.map((b) => ({
+			id: b.id,
 			name: b.name,
 			origin: b.origin,
 			dominantNote: b.dominantNote,
@@ -139,11 +128,18 @@ export async function getBrewSuggestions(): Promise<BrewSuggestions> {
 			roastLevel: b.roastLevel,
 		})),
 	);
-	const machines = await getAllMachineNames();
+	const machines = await db.Machines.toArray().then((b) =>
+		b.map((b) => ({
+			id: b.id,
+			name: b.name,
+			type: b.type,
+		})),
+	);
 	const BeanCardProps = beans as Array<BeanCardProps>;
+	const MachineCardProps = machines as Array<MachineCardProps>;
 
 	return {
 		bean: BeanCardProps,
-		machine: machines,
+		machine: MachineCardProps,
 	};
 }
