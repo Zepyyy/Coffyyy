@@ -6,6 +6,8 @@ import BestBrewPanel from "@/components/home/BestBrewPanel";
 import BrewRow from "@/components/home/BrewRow";
 import NoBrewsPanel from "@/components/home/NoBrewsPanel";
 import TasteRatingPrompt from "@/components/home/TasteRatingPrompt";
+import { Button } from "@/components/ui/button";
+import addRandomBrewsInsights from "@/db/crud/add";
 import { useAllBeans } from "@/hooks/api/useBeans";
 import { useLatestUnratedBrew, useRecentBrews } from "@/hooks/api/useBrews";
 import {
@@ -88,6 +90,14 @@ export default function Home() {
 				</div>
 				<Coffee className="size-8 text-primary/20 group-hover:text-primary/30 transition-colors" />
 			</Link>
+
+			<Button
+				variant="add"
+				onClick={() => addRandomBrewsInsights(12, 1)}
+				className={`${import.meta.env.PROD && "hidden"}`}
+			>
+				Add insights
+			</Button>
 
 			{/* Taste rating prompt for latest unrated brew */}
 			{pendingRating && (

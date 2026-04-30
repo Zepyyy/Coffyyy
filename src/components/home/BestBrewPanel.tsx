@@ -1,7 +1,54 @@
+import {
+	Bar,
+	BarChart,
+	CartesianGrid,
+	LabelList,
+	XAxis,
+	YAxis,
+} from "recharts";
 import TasteStrengthChart from "@/components/home/TasteStrengthChart";
+import {
+	type ChartConfig,
+	ChartContainer,
+	ChartLegend,
+	ChartLegendContent,
+	ChartTooltip,
+	ChartTooltipContent,
+} from "@/components/ui/chart";
 import { colorSwatch } from "@/lib/utils";
 import type { Beans } from "@/types/BeanTypes";
 import type { BeanBrewInsights } from "@/types/BrewTypes";
+
+function buildGrindAverageChartData(
+	points: BeanBrewInsights["recentBrewScores"],
+) {
+	const groupedByGrind = new Map<
+		number,
+		{ totalRating: number; brewCount: number }
+	>();
+
+	for (const point of points) {
+		if (point.grindSize == null || point.rating == null) continue;
+
+		const current = groupedByGrind.get(point.grindSize) ?? {
+			totalRating: 0,
+			brewCount: 0,
+		};
+
+		current.totalRating += point.rating;
+		current.brewCount += 1;
+
+		groupedByGrind.set(point.grindSize, current);
+	}
+
+	return Array.from(groupedByGrind.entries())
+		.map(([grindSize, { totalRating, brewCount }]) => ({
+			grindSize,
+			avgRating: (totalRating / brewCount).toPrecision(2),
+			brewCount,
+		}))
+		.sort((a, b) => a.grindSize - b.grindSize);
+}
 
 export default function BestBrewPanel({
 	insights,
@@ -13,42 +60,17 @@ export default function BestBrewPanel({
 	bean: Beans;
 }) {
 	const swatch = colorSwatch[bean.dominantNote] ?? colorSwatch.default;
-
-	const doseYield =
-		insights.target.beanWeight != null && insights.target.espressoWeight != null
-			? `${Number(insights.target.beanWeight.toFixed(1))}g → ${Number(insights.target.espressoWeight.toFixed(1))}g`
-			: insights.target.beanWeight != null
-				? `${Number(insights.target.beanWeight.toFixed(1))}g`
-				: "—";
-
-	const hasChartData = insights.recentBrewScores.some(
-		(s) => s.taste != null && s.strength != null,
-	);
-
-	const adjustmentsBlock = (
-		<div className="space-y-3">
-			<p className="font-Mono text-xs uppercase tracking-[0.16em] text-muted-foreground">
-				Next adjustment
-			</p>
-			{insights.adjustments.length > 0 ? (
-				insights.adjustments.map((adj) => (
-					<p
-						key={adj.title}
-						className="font-Recursive text-base font-medium text-foreground/90"
-					>
-						→ {adj.title}
-					</p>
-				))
-			) : (
-				<p className="font-Recursive text-sm text-muted-foreground">
-					Rate the latest brew to get a recommendation.
-				</p>
-			)}
-		</div>
-	);
+	const chartData = buildGrindAverageChartData(insights.recentBrewScores);
+	const n = chartData.length;
+	const chartConfig = {
+		avgRating: {
+			label: "Avg Rating",
+			color: `${swatch.var}`,
+		},
+	} satisfies ChartConfig;
 
 	return (
-		<div className="border border-border overflow-hidden backdrop-blur-sm">
+		<div className="border border-border backdrop-blur-sm">
 			{/* Header */}
 			<div
 				className={`px-5 py-4 ${swatch.secondaryBg} flex items-center justify-between gap-4`}
@@ -85,53 +107,93 @@ export default function BestBrewPanel({
 				</div>
 			</div>
 
-			{/* Key metrics */}
-			<div className="grid grid-cols-3 border-b border-border">
-				<div className="p-5 border-r border-border">
-					<p className="font-Mono text-xs uppercase tracking-[0.16em] text-muted-foreground">
-						Grind
+			{/* Chart + past data */}
+			<div className="grid sm:grid-cols-[220px_1fr] divide-y sm:divide-y-0 sm:divide-x divide-border">
+				<div className="p-5">
+					<p className="font-Mono text-xs uppercase tracking-[0.16em] text-muted-foreground mb-4">
+						Extraction profile
 					</p>
-					<p className="font-News text-5xl leading-none mt-2">
-						{insights.target.grindSize}
-					</p>
-				</div>
-				<div className="p-5 border-r border-border">
-					<p className="font-Mono text-xs uppercase tracking-[0.16em] text-muted-foreground">
-						Dose → Yield
-					</p>
-					<p className="font-News text-2xl leading-none mt-2 text-foreground/90">
-						{doseYield}
-					</p>
-					{insights.target.ratio != null && (
-						<p className="font-Mono text-[10px] text-muted-foreground mt-1.5">
-							1 : {insights.target.ratio.toFixed(1)}
-						</p>
-					)}
+					<TasteStrengthChart points={insights.recentBrewScores} />
 				</div>
 				<div className="p-5">
 					<p className="font-Mono text-xs uppercase tracking-[0.16em] text-muted-foreground">
-						Time
+						Average rating by grind size
 					</p>
-					<p className="font-News text-2xl leading-none mt-2 text-foreground/90">
-						{insights.target.extractionTime ?? "—"}
-					</p>
+					{n === 0 ? (
+						<p className="font-Mono text-xs text-muted-foreground mt-4">
+							No brew data yet
+						</p>
+					) : (
+						<div className={`relative`}>
+							<ChartContainer
+								config={chartConfig}
+								className="min-h-20 w-full max-h-54 pt-4"
+							>
+								<BarChart
+									data={chartData}
+									accessibilityLayer
+									margin={{ top: 20 }}
+									maxBarSize={54}
+								>
+									<CartesianGrid strokeDasharray="2 4" />
+									<XAxis
+										dataKey="grindSize"
+										domain={[0, 20]}
+										tickLine={false}
+										axisLine={false}
+										tick={{ fontSize: 12 }}
+										tickMargin={8}
+										interval={0}
+									/>
+									<YAxis
+										dataKey="avgRating"
+										domain={[0, 5]}
+										tickLine={false}
+										axisLine={false}
+										tick={{ fontSize: 12 }}
+										tickMargin={4}
+										allowDecimals={false}
+										interval={0}
+										hide
+									/>
+									<ChartTooltip
+										content={<ChartTooltipContent indicator="dot" hideLabel />}
+									/>
+									{/*<Bar
+										dataKey="brewCount"
+										fill="var(--color-brewCount)"
+										opacity={0.8}
+										radius={[2, 2, 0, 0]}
+									>
+										<LabelList
+											position={"top"}
+											offset={12}
+											fontSize={12}
+											className="fill-foreground"
+											dataKey={"brewCount"}
+										/>
+									</Bar>*/}
+
+									<Bar
+										dataKey="avgRating"
+										fill="var(--color-avgRating)"
+										radius={[2, 2, 0, 0]}
+									>
+										<LabelList
+											position={"top"}
+											offset={12}
+											fontSize={12}
+											className="fill-foreground"
+											dataKey={"avgRating"}
+										/>
+									</Bar>
+									<ChartLegend content={<ChartLegendContent />} />
+								</BarChart>
+							</ChartContainer>
+						</div>
+					)}
 				</div>
 			</div>
-
-			{/* Chart + adjustments */}
-			{hasChartData ? (
-				<div className="grid sm:grid-cols-[220px_1fr] divide-y sm:divide-y-0 sm:divide-x divide-border">
-					<div className={`p-5 ${swatch.text}`}>
-						<p className="font-Mono text-xs uppercase tracking-[0.16em] text-muted-foreground mb-4">
-							Extraction profile
-						</p>
-						<TasteStrengthChart points={insights.recentBrewScores} />
-					</div>
-					<div className="p-5">{adjustmentsBlock}</div>
-				</div>
-			) : (
-				<div className="p-5">{adjustmentsBlock}</div>
-			)}
 		</div>
 	);
 }
