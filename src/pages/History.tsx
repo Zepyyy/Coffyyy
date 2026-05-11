@@ -99,11 +99,11 @@ export default function History() {
 								<div
 									key={label}
 									className={cn(
-										"rounded-xl border border-border bg-card p-4",
+										"relative border border-border bg-background hover:border-primary/30 p-3 space-y-1 font-Lora",
 										className,
 									)}
 								>
-									<p className="text-xs uppercase tracking-wide text-muted-foreground">
+									<p className="text-xs uppercase tracking-wide text-muted-foreground font-Mono">
 										{label}
 									</p>
 									<p className="mt-1 truncate text-lg font-semibold">{value}</p>
