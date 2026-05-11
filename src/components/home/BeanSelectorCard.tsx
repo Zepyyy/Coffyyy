@@ -63,7 +63,7 @@ export default function BeanSelectorCard({
 					: "border-border bg-background hover:border-primary/30"
 			}`}
 		>
-			<div className={`h-1 w-full ${swatch.stripe}`} />
+			<div className={`h-1 w-full absolute top-0 mb-1 ${swatch.stripe}`} />
 			<div className="p-3 space-y-2">
 				<div className="flex items-start justify-between gap-2">
 					<p
